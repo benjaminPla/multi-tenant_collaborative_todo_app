@@ -71,6 +71,7 @@ pub async fn events(
     Path((team_id, board_id)): Path<(Uuid, Uuid)>,
 ) -> Result<Response, TodoAppError> {
     let Ok(permit) = state.sse_permits.clone().try_acquire_owned() else {
+        tracing::warn!(%board_id, "live updates refused: connection cap reached");
         return Ok((StatusCode::SERVICE_UNAVAILABLE, Json(json!({ "error": "too many live connections" }))).into_response());
     };
     let use_case = SubscribeTodosUseCase::new(state.board_repo, state.todo_events);

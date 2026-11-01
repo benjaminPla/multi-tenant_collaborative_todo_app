@@ -1,13 +1,12 @@
 use crate::{
     application::teams::errors::TeamAppError,
     domain::teams::ports::TeamRepoError,
+    interface::errors::respond,
 };
 use axum::{
     http::StatusCode,
     response::{IntoResponse, Response},
-    Json,
 };
-use serde_json::json;
 
 impl IntoResponse for TeamAppError {
     fn into_response(self) -> Response {
@@ -21,10 +20,6 @@ impl IntoResponse for TeamAppError {
             | TeamAppError::Repo(TeamRepoError::UserNotFound) => StatusCode::NOT_FOUND,
             TeamAppError::Repo(TeamRepoError::Unexpected(_))  => StatusCode::INTERNAL_SERVER_ERROR,
         };
-        let message = match status {
-            StatusCode::INTERNAL_SERVER_ERROR => "internal error".to_owned(),
-            _                                 => self.to_string(),
-        };
-        (status, Json(json!({ "error": message }))).into_response()
+        respond(status, &self)
     }
 }

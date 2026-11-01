@@ -19,8 +19,9 @@ services:
       HTTP_BODY_TIMEOUT_SECS: 10
       HTTP_CONCURRENCY_LIMIT: 32
       HTTP_TIMEOUT_SECS: 10
+      LOG_FORMAT: json
       PORT: 3000
-      RUST_LOG: info
+      RUST_LOG: info,sqlx=warn
       SESSION_TTL_SECS: 86400
       SSE_MAX_CONNECTIONS: 256
 

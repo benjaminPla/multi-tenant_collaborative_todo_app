@@ -1,10 +1,11 @@
-use crate::application::authz::errors::AuthzError;
+use crate::{
+    application::authz::errors::AuthzError,
+    interface::errors::respond,
+};
 use axum::{
     http::StatusCode,
     response::{IntoResponse, Response},
-    Json,
 };
-use serde_json::json;
 
 impl IntoResponse for AuthzError {
     fn into_response(self) -> Response {
@@ -13,10 +14,6 @@ impl IntoResponse for AuthzError {
             AuthzError::NotFound  => StatusCode::NOT_FOUND,
             AuthzError::Pip(_)    => StatusCode::INTERNAL_SERVER_ERROR,
         };
-        let message = match status {
-            StatusCode::INTERNAL_SERVER_ERROR => "internal error".to_owned(),
-            _                                 => self.to_string(),
-        };
-        (status, Json(json!({ "error": message }))).into_response()
+        respond(status, &self)
     }
 }

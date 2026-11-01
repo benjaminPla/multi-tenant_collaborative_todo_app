@@ -1,13 +1,12 @@
 use crate::{
     application::todos::errors::TodoAppError,
     domain::{boards::ports::BoardRepoError, todos::ports::TodoRepoError},
+    interface::errors::respond,
 };
 use axum::{
     http::StatusCode,
     response::{IntoResponse, Response},
-    Json,
 };
-use serde_json::json;
 
 impl IntoResponse for TodoAppError {
     fn into_response(self) -> Response {
@@ -21,10 +20,6 @@ impl IntoResponse for TodoAppError {
             TodoAppError::Board(BoardRepoError::Unexpected(_))
             | TodoAppError::Repo(TodoRepoError::Unexpected(_))     => StatusCode::INTERNAL_SERVER_ERROR,
         };
-        let message = match status {
-            StatusCode::INTERNAL_SERVER_ERROR => "internal error".to_owned(),
-            _                                 => self.to_string(),
-        };
-        (status, Json(json!({ "error": message }))).into_response()
+        respond(status, &self)
     }
 }

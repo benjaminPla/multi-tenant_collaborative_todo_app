@@ -23,7 +23,7 @@ be-up:
 	HTTP_CONCURRENCY_LIMIT=32 \
 	HTTP_TIMEOUT_SECS=10 \
 	PORT=$(BACKEND_PORT) \
-	RUST_LOG=info \
+	RUST_LOG=info,sqlx=warn \
 	SESSION_TTL_SECS=86400 \
 	SSE_MAX_CONNECTIONS=256 \
 	cargo watch -q -x run

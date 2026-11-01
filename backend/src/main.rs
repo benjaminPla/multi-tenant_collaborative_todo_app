@@ -42,7 +42,11 @@ use tracing_subscriber::EnvFilter;
 
 #[tokio::main]
 async fn main() {
-    tracing_subscriber::fmt().with_env_filter(EnvFilter::from_default_env()).init();
+    let logs = tracing_subscriber::fmt().with_env_filter(EnvFilter::from_default_env());
+    match std::env::var("LOG_FORMAT").as_deref() {
+        Ok("json") => logs.json().init(),
+        _          => logs.init(),
+    }
 
     let config = envy::from_env::<Config>().expect("Failed to load env vars");
 
@@ -78,6 +82,7 @@ async fn main() {
         .layer(
             TraceLayer::new_for_http()
                 .make_span_with(DefaultMakeSpan::new().level(Level::INFO))
+                .on_failure(())
                 .on_response(DefaultOnResponse::new().level(Level::INFO)),
         )
         .layer(CompressionLayer::new())
@@ -91,9 +96,11 @@ async fn main() {
 
     let address  = SocketAddr::new(config.host, config.port);
     let listener = tokio::net::TcpListener::bind(address).await.unwrap();
+    tracing::info!(%address, "listening");
     axum::serve(listener, ServiceExt::<Request>::into_make_service(service))
         .with_graceful_shutdown(async move {
             shutdown_signal().await;
+            tracing::info!("shutting down");
             let _ = shutdown_tx.send(true);
         })
         .await

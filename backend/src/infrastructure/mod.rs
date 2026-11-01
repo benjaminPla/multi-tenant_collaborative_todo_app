@@ -1,4 +1,5 @@
 pub mod argon2_hasher_service;
+pub mod broadcast_todo_events;
 pub mod pg_board_repo;
 pub mod pg_pip;
 pub mod pg_session_repo;

@@ -25,6 +25,7 @@ mod tests {
     use super::*;
     use crate::infrastructure::{
         argon2_hasher_service::Argon2HasherService,
+        broadcast_todo_events::BroadcastTodoEvents,
         pg_board_repo::PgBoardRepo,
         pg_pip::PgPip,
         pg_session_repo::PgSessionRepo,
@@ -46,7 +47,9 @@ mod tests {
             pip:            Arc::new(PgPip::new(pool.clone())),
             session_repo:   Arc::new(PgSessionRepo::new(pool.clone())),
             session_ttl:    chrono::Duration::hours(1),
+            shutdown:       tokio::sync::watch::channel(false).1,
             team_repo:      Arc::new(PgTeamRepo::new(pool.clone())),
+            todo_events:    Arc::new(BroadcastTodoEvents::new()),
             todo_repo:      Arc::new(PgTodoRepo::new(pool.clone())),
             user_repo:      Arc::new(PgUserRepo::new(pool)),
         }
@@ -82,6 +85,7 @@ mod tests {
             ("PATCH",  format!("/teams/{ID}/boards/{ID}")),
             ("GET",    format!("/teams/{ID}/boards/{ID}/todos")),
             ("POST",   format!("/teams/{ID}/boards/{ID}/todos")),
+            ("GET",    format!("/teams/{ID}/boards/{ID}/todos/events")),
             ("DELETE", format!("/teams/{ID}/boards/{ID}/todos/{ID}")),
             ("GET",    format!("/teams/{ID}/boards/{ID}/todos/{ID}")),
             ("PATCH",  format!("/teams/{ID}/boards/{ID}/todos/{ID}")),

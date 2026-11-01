@@ -1,10 +1,24 @@
 use crate::domain::{
     boards::BoardId,
     teams::TeamId,
-    todos::{Todo, TodoId},
+    todos::{Todo, TodoEvent, TodoId},
     BoxError,
 };
 use async_trait::async_trait;
+use std::pin::Pin;
+use tokio_stream::Stream;
+
+pub type TodoFeed = Pin<Box<dyn Stream<Item = TodoFeedItem> + Send>>;
+
+pub enum TodoFeedItem {
+    Event(TodoEvent),
+    Lagged,
+}
+
+pub trait TodoEvents: Send + Sync {
+    fn publish(&self, event: TodoEvent);
+    fn subscribe(&self) -> TodoFeed;
+}
 
 #[derive(Debug, thiserror::Error)]
 pub enum TodoRepoError {
@@ -23,7 +37,7 @@ pub enum TodoRepoError {
 #[async_trait]
 pub trait TodoRepo: Send + Sync {
     async fn create(&self, todo: &Todo)                                        -> Result<Todo, TodoRepoError>;
-    async fn delete(&self, team_id: TeamId, board_id: BoardId, id: TodoId)     -> Result<(), TodoRepoError>;
+    async fn delete(&self, team_id: TeamId, board_id: BoardId, id: TodoId)     -> Result<Todo, TodoRepoError>;
     async fn find_by_id(&self, team_id: TeamId, board_id: BoardId, id: TodoId) -> Result<Option<Todo>, TodoRepoError>;
     async fn list(&self, team_id: TeamId, board_id: BoardId)                   -> Result<Vec<Todo>, TodoRepoError>;
     async fn update(&self, todo: &Todo)                                        -> Result<Todo, TodoRepoError>;

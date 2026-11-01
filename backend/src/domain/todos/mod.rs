@@ -1,10 +1,12 @@
 pub mod errors;
+pub mod events;
 pub mod ports;
 pub mod value_objects;
 
 use crate::domain::{boards::BoardId, teams::TeamId, users::UserId};
 use chrono::{DateTime, Utc};
 pub use errors::TodoError;
+pub use events::{TodoEvent, TodoEventKind};
 pub use value_objects::{TodoDescription, TodoId, TodoStatus, TodoTitle};
 
 #[derive(Clone, Debug)]

@@ -1,4 +1,4 @@
-use crate::domain::todos::Todo;
+use crate::domain::todos::{Todo, TodoEvent};
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Deserializer, Serialize};
 use uuid::Uuid;
@@ -9,6 +9,27 @@ pub struct CreateTodoRequest {
     pub description: Option<String>,
     pub status:      Option<String>,
     pub title:       String,
+}
+
+#[derive(Serialize)]
+pub struct ActorResponse {
+    pub email: String,
+    pub id:    Uuid,
+}
+
+#[derive(Serialize)]
+pub struct TodoEventResponse {
+    pub actor: ActorResponse,
+    pub todo:  TodoResponse,
+}
+
+impl From<TodoEvent> for TodoEventResponse {
+    fn from(event: TodoEvent) -> Self {
+        Self {
+            actor: ActorResponse { email: event.actor_email.as_str().to_owned(), id: event.actor_id.as_uuid() },
+            todo:  event.todo.into(),
+        }
+    }
 }
 
 #[derive(Serialize)]

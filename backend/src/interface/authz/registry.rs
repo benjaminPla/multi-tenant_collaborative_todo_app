@@ -30,6 +30,7 @@ const POLICIES: &[(&str, &str, Policy)] = &[
     ("PATCH",  "/teams/{id}/boards/{board_id}",                 guarded(Action::UpdateBoard,     loaders::team)),
     ("GET",    "/teams/{id}/boards/{board_id}/todos",           guarded(Action::ListTodos,       loaders::team)),
     ("POST",   "/teams/{id}/boards/{board_id}/todos",           guarded(Action::CreateTodo,      loaders::team)),
+    ("GET",    "/teams/{id}/boards/{board_id}/todos/events",    guarded(Action::ListTodos,       loaders::team)),
     ("DELETE", "/teams/{id}/boards/{board_id}/todos/{todo_id}", guarded(Action::DeleteTodo,      loaders::team)),
     ("GET",    "/teams/{id}/boards/{board_id}/todos/{todo_id}", guarded(Action::ReadTodo,        loaders::team)),
     ("PATCH",  "/teams/{id}/boards/{board_id}/todos/{todo_id}", guarded(Action::UpdateTodo,      loaders::team)),

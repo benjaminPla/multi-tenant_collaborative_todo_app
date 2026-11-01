@@ -4,11 +4,12 @@ use crate::domain::{
     hash::HasherService,
     sessions::ports::SessionRepo,
     teams::ports::TeamRepo,
-    todos::ports::TodoRepo,
+    todos::ports::{TodoEvents, TodoRepo},
     users::ports::UserRepo,
 };
 use chrono::Duration;
 use std::sync::Arc;
+use tokio::sync::watch;
 
 #[derive(Clone)]
 pub struct AppState {
@@ -17,7 +18,9 @@ pub struct AppState {
     pub pip:            Arc<dyn Pip>,
     pub session_repo:   Arc<dyn SessionRepo>,
     pub session_ttl:    Duration,
+    pub shutdown:       watch::Receiver<bool>,
     pub team_repo:      Arc<dyn TeamRepo>,
+    pub todo_events:    Arc<dyn TodoEvents>,
     pub todo_repo:      Arc<dyn TodoRepo>,
     pub user_repo:      Arc<dyn UserRepo>,
 }

@@ -4,20 +4,23 @@ use crate::{
         boards::BoardId,
         teams::TeamId,
         todos::{
-            ports::{TodoRepo, TodoRepoError},
+            ports::{TodoEvents, TodoRepo, TodoRepoError},
             Todo,
             TodoDescription,
+            TodoEvent,
+            TodoEventKind,
             TodoId,
             TodoStatus,
             TodoTitle,
         },
-        users::UserId,
+        users::{User, UserId},
     },
 };
 use std::sync::Arc;
 use uuid::Uuid;
 
 pub struct UpdateTodoInput {
+    pub actor:       User,
     pub assignee_id: Option<Option<Uuid>>,
     pub board_id:    Uuid,
     pub description: Option<String>,
@@ -29,12 +32,13 @@ pub struct UpdateTodoInput {
 }
 
 pub struct UpdateTodoUseCase {
-    todo_repo: Arc<dyn TodoRepo>,
+    todo_events: Arc<dyn TodoEvents>,
+    todo_repo:   Arc<dyn TodoRepo>,
 }
 
 impl UpdateTodoUseCase {
-    pub fn new(todo_repo: Arc<dyn TodoRepo>) -> Self {
-        Self { todo_repo }
+    pub fn new(todo_events: Arc<dyn TodoEvents>, todo_repo: Arc<dyn TodoRepo>) -> Self {
+        Self { todo_events, todo_repo }
     }
 
     pub async fn execute(&self, input: UpdateTodoInput) -> Result<Todo, TodoAppError> {
@@ -64,6 +68,7 @@ impl UpdateTodoUseCase {
         }
 
         let todo = self.todo_repo.update(&todo).await?;
+        self.todo_events.publish(TodoEvent::by(&input.actor, TodoEventKind::Updated, todo.clone()));
         Ok(todo)
     }
 }

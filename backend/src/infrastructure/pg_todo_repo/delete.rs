@@ -2,24 +2,24 @@ use crate::{
     domain::{
         boards::BoardId,
         teams::TeamId,
-        todos::{ports::TodoRepoError, TodoId},
+        todos::{ports::TodoRepoError, Todo, TodoId},
     },
     infrastructure::tenant,
 };
-use super::row::map_err;
+use super::row::{map_err, TodoRow};
 use sqlx::PgPool;
 
-pub async fn delete(pool: &PgPool, team_id: TeamId, board_id: BoardId, id: TodoId) -> Result<(), TodoRepoError> {
+pub async fn delete(pool: &PgPool, team_id: TeamId, board_id: BoardId, id: TodoId) -> Result<Todo, TodoRepoError> {
     let mut tx = tenant::begin(pool, team_id).await.map_err(map_err)?;
-    let result = sqlx::query("DELETE FROM todos WHERE id = $1 AND board_id = $2")
-        .bind(id.as_uuid())
-        .bind(board_id.as_uuid())
-        .execute(&mut *tx)
-        .await
-        .map_err(map_err)?;
+    let row    = sqlx::query_as::<_, TodoRow>(
+        "DELETE FROM todos WHERE id = $1 AND board_id = $2
+         RETURNING assignee_id, board_id, created_at, description, id, status::text AS status, team_id, title, updated_at, version",
+    )
+    .bind(id.as_uuid())
+    .bind(board_id.as_uuid())
+    .fetch_optional(&mut *tx)
+    .await
+    .map_err(map_err)?;
     tx.commit().await.map_err(map_err)?;
-    match result.rows_affected() {
-        0 => Err(TodoRepoError::NotFound),
-        _ => Ok(()),
-    }
+    row.ok_or(TodoRepoError::NotFound)?.try_into()
 }

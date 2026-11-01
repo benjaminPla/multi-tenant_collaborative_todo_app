@@ -33,7 +33,7 @@ impl TodoRepo for PgTodoRepo {
         create::create(&self.pool, todo).await
     }
 
-    async fn delete(&self, team_id: TeamId, board_id: BoardId, id: TodoId) -> Result<(), TodoRepoError> {
+    async fn delete(&self, team_id: TeamId, board_id: BoardId, id: TodoId) -> Result<Todo, TodoRepoError> {
         delete::delete(&self.pool, team_id, board_id, id).await
     }
 

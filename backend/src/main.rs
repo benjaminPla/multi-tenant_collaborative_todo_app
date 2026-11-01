@@ -7,6 +7,7 @@ mod interface;
 use config::Config;
 use infrastructure::{
     argon2_hasher_service::Argon2HasherService,
+    broadcast_todo_events::BroadcastTodoEvents,
     pg_board_repo::PgBoardRepo,
     pg_pip::PgPip,
     pg_session_repo::PgSessionRepo,
@@ -16,6 +17,10 @@ use infrastructure::{
 };
 use interface::{app_state::AppState, router::app};
 use std::{net::SocketAddr, sync::Arc, time::Duration};
+use tokio::{
+    signal::unix::{signal, SignalKind},
+    sync::watch,
+};
 
 #[tokio::main]
 async fn main() {
@@ -30,13 +35,17 @@ async fn main() {
         .await
         .expect("Failed to connect to Postgres");
 
+    let (shutdown_tx, shutdown_rx) = watch::channel(false);
+
     let app_state = AppState {
         board_repo:     Arc::new(PgBoardRepo::new(pool.clone())),
         hasher_service: Arc::new(Argon2HasherService::new()),
         pip:            Arc::new(PgPip::new(pool.clone())),
         session_repo:   Arc::new(PgSessionRepo::new(pool.clone())),
         session_ttl:    chrono::Duration::seconds(config.session_ttl_secs.into()),
+        shutdown:       shutdown_rx,
         team_repo:      Arc::new(PgTeamRepo::new(pool.clone())),
+        todo_events:    Arc::new(BroadcastTodoEvents::new()),
         todo_repo:      Arc::new(PgTodoRepo::new(pool.clone())),
         user_repo:      Arc::new(PgUserRepo::new(pool.clone())),
     };
@@ -46,6 +55,18 @@ async fn main() {
     let address  = SocketAddr::new(config.host, config.port);
     let listener = tokio::net::TcpListener::bind(address).await.unwrap();
     axum::serve(listener, app.into_make_service_with_connect_info::<SocketAddr>())
+        .with_graceful_shutdown(async move {
+            shutdown_signal().await;
+            let _ = shutdown_tx.send(true);
+        })
         .await
         .unwrap();
+}
+
+async fn shutdown_signal() {
+    let mut terminate = signal(SignalKind::terminate()).expect("Failed to install SIGTERM handler");
+    tokio::select! {
+        _ = tokio::signal::ctrl_c() => {}
+        _ = terminate.recv()        => {}
+    }
 }

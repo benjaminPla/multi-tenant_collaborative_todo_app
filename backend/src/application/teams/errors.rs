@@ -1,4 +1,7 @@
-use crate::domain::teams::{ports::TeamRepoError, TeamError};
+use crate::domain::{
+    teams::{ports::TeamRepoError, TeamError},
+    users::UserError,
+};
 
 #[derive(Debug, thiserror::Error)]
 pub enum TeamAppError {
@@ -8,4 +11,6 @@ pub enum TeamAppError {
     Forbidden,
     #[error(transparent)]
     Repo(#[from] TeamRepoError),
+    #[error(transparent)]
+    User(#[from] UserError),
 }

@@ -13,14 +13,15 @@ pub fn decide(subject: &Subject, action: Action, resource: &Resource) -> Decisio
     let is_self   = matches!(resource, Resource::Member { user_id, .. } if *user_id == subject.id);
 
     let permitted = match action {
-        Action::ListTeams                                           => return Decision::Permit(Scope::Memberships),
-        Action::CreateTeam | Action::ReadCurrentUser                => true,
-        Action::ListMembers | Action::ReadTeam                      => is_member,
-        Action::RemoveMember                                        => is_owner || (is_member && is_self),
-        Action::AddMember | Action::DeleteTeam
-        | Action::UpdateMember | Action::UpdateTeam                 => is_owner,
+        Action::ListTeams                                            => return Decision::Permit(Scope::Memberships),
+        Action::CreateTeam | Action::ReadCurrentUser                 => true,
+        Action::CreateBoard | Action::ListBoards | Action::ListMembers
+        | Action::ReadBoard | Action::ReadTeam | Action::UpdateBoard => is_member,
+        Action::RemoveMember                                         => is_owner || (is_member && is_self),
+        Action::AddMember | Action::DeleteBoard | Action::DeleteTeam
+        | Action::UpdateMember | Action::UpdateTeam                  => is_owner,
         Action::CreateUser | Action::DeleteUser
-        | Action::ListUsers | Action::ReadUser | Action::UpdateUser => false,
+        | Action::ListUsers | Action::ReadUser | Action::UpdateUser  => false,
     };
 
     match permitted {
@@ -34,19 +35,24 @@ mod tests {
     use super::*;
     use crate::domain::{teams::TeamId, users::UserId};
 
-    const ALL: [Action; 15] = [
+    const ALL: [Action; 20] = [
         Action::AddMember,
+        Action::CreateBoard,
         Action::CreateTeam,
         Action::CreateUser,
+        Action::DeleteBoard,
         Action::DeleteTeam,
         Action::DeleteUser,
+        Action::ListBoards,
         Action::ListMembers,
         Action::ListTeams,
         Action::ListUsers,
+        Action::ReadBoard,
         Action::ReadCurrentUser,
         Action::ReadTeam,
         Action::ReadUser,
         Action::RemoveMember,
+        Action::UpdateBoard,
         Action::UpdateMember,
         Action::UpdateTeam,
         Action::UpdateUser,
@@ -76,10 +82,12 @@ mod tests {
     fn member_reads_but_does_not_manage() {
         let member = subject(false, Some(TeamRole::Member));
         let team   = Resource::Team(TeamId::generate());
-        assert_eq!(decide(&member, Action::ReadTeam, &team), PERMIT);
-        assert_eq!(decide(&member, Action::ListMembers, &team), PERMIT);
-        assert_eq!(decide(&member, Action::UpdateTeam, &team), Decision::Deny);
-        assert_eq!(decide(&member, Action::AddMember, &team), Decision::Deny);
+        for action in [Action::CreateBoard, Action::ListBoards, Action::ListMembers, Action::ReadBoard, Action::ReadTeam, Action::UpdateBoard] {
+            assert_eq!(decide(&member, action, &team), PERMIT, "{action:?}");
+        }
+        for action in [Action::AddMember, Action::DeleteBoard, Action::DeleteTeam, Action::UpdateTeam] {
+            assert_eq!(decide(&member, action, &team), Decision::Deny, "{action:?}");
+        }
     }
 
     #[test]
@@ -96,7 +104,7 @@ mod tests {
     fn non_member_is_denied_team_actions() {
         let outsider = subject(false, None);
         let team     = Resource::Team(TeamId::generate());
-        for action in [Action::ListMembers, Action::ReadTeam, Action::UpdateTeam] {
+        for action in [Action::ListBoards, Action::ListMembers, Action::ReadBoard, Action::ReadTeam, Action::UpdateTeam] {
             assert_eq!(decide(&outsider, action, &team), Decision::Deny, "{action:?}");
         }
         assert_eq!(decide(&outsider, Action::CreateTeam, &Resource::System), PERMIT);
@@ -107,7 +115,7 @@ mod tests {
     fn owner_manages_team() {
         let owner = subject(false, Some(TeamRole::Owner));
         let team  = Resource::Team(TeamId::generate());
-        for action in [Action::AddMember, Action::DeleteTeam, Action::UpdateMember, Action::UpdateTeam] {
+        for action in [Action::AddMember, Action::DeleteBoard, Action::DeleteTeam, Action::UpdateMember, Action::UpdateTeam] {
             assert_eq!(decide(&owner, action, &team), PERMIT, "{action:?}");
         }
     }

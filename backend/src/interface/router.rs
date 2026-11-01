@@ -2,6 +2,7 @@ use crate::interface::{
     app_state::AppState,
     authn::router::authn_router,
     authz::pep::pep,
+    boards::router::boards_router,
     teams::router::teams_router,
     users::router::users_router,
 };
@@ -11,6 +12,7 @@ pub fn app(state: AppState) -> Router {
     Router::new()
         .nest("/auth", authn_router())
         .nest("/teams", teams_router())
+        .nest("/teams/{id}/boards", boards_router())
         .nest("/users", users_router())
         .route_layer(from_fn_with_state(state.clone(), pep))
         .with_state(state)
@@ -21,6 +23,7 @@ mod tests {
     use super::*;
     use crate::infrastructure::{
         argon2_hasher_service::Argon2HasherService,
+        pg_board_repo::PgBoardRepo,
         pg_pip::PgPip,
         pg_session_repo::PgSessionRepo,
         pg_team_repo::PgTeamRepo,
@@ -35,6 +38,7 @@ mod tests {
     fn state() -> AppState {
         let pool = sqlx::postgres::PgPoolOptions::new().connect_lazy("postgres://unused").unwrap();
         AppState {
+            board_repo:     Arc::new(PgBoardRepo::new(pool.clone())),
             hasher_service: Arc::new(Argon2HasherService::new()),
             pip:            Arc::new(PgPip::new(pool.clone())),
             session_repo:   Arc::new(PgSessionRepo::new(pool.clone())),
@@ -67,6 +71,11 @@ mod tests {
             ("DELETE", format!("/teams/{ID}")),
             ("GET",    format!("/teams/{ID}")),
             ("PATCH",  format!("/teams/{ID}")),
+            ("GET",    format!("/teams/{ID}/boards")),
+            ("POST",   format!("/teams/{ID}/boards")),
+            ("DELETE", format!("/teams/{ID}/boards/{ID}")),
+            ("GET",    format!("/teams/{ID}/boards/{ID}")),
+            ("PATCH",  format!("/teams/{ID}/boards/{ID}")),
             ("GET",    format!("/teams/{ID}/members")),
             ("POST",   format!("/teams/{ID}/members")),
             ("DELETE", format!("/teams/{ID}/members/{ID}")),

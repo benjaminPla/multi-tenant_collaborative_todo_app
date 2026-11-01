@@ -7,6 +7,7 @@ mod interface;
 use config::Config;
 use infrastructure::{
     argon2_hasher_service::Argon2HasherService,
+    pg_board_repo::PgBoardRepo,
     pg_pip::PgPip,
     pg_session_repo::PgSessionRepo,
     pg_team_repo::PgTeamRepo,
@@ -29,6 +30,7 @@ async fn main() {
         .expect("Failed to connect to Postgres");
 
     let app_state = AppState {
+        board_repo:     Arc::new(PgBoardRepo::new(pool.clone())),
         hasher_service: Arc::new(Argon2HasherService::new()),
         pip:            Arc::new(PgPip::new(pool.clone())),
         session_repo:   Arc::new(PgSessionRepo::new(pool.clone())),

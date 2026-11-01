@@ -20,9 +20,14 @@ CREATE INDEX todos_team_id_board_id_idx ON todos (team_id, board_id);
 ALTER TABLE todos ENABLE ROW LEVEL SECURITY;
 ALTER TABLE todos FORCE ROW LEVEL SECURITY;
 
+CREATE POLICY admin_access ON todos
+    AS PERMISSIVE FOR ALL TO plaza_app
+    USING      ((SELECT current_setting('app.is_admin', true)) = 'true')
+    WITH CHECK ((SELECT current_setting('app.is_admin', true)) = 'true');
+
 CREATE POLICY team_isolation ON todos
     AS PERMISSIVE FOR ALL TO plaza_app
-    USING      (team_id = (SELECT current_setting('app.team_id', true)::uuid))
-    WITH CHECK (team_id = (SELECT current_setting('app.team_id', true)::uuid));
+    USING      (team_id = (SELECT nullif(current_setting('app.team_id', true), '')::uuid))
+    WITH CHECK (team_id = (SELECT nullif(current_setting('app.team_id', true), '')::uuid));
 
 GRANT DELETE, INSERT, SELECT, UPDATE ON todos TO plaza_app;

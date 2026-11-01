@@ -9,9 +9,14 @@ CREATE TABLE boards (
 ALTER TABLE boards ENABLE ROW LEVEL SECURITY;
 ALTER TABLE boards FORCE ROW LEVEL SECURITY;
 
+CREATE POLICY admin_access ON boards
+    AS PERMISSIVE FOR ALL TO plaza_app
+    USING      ((SELECT current_setting('app.is_admin', true)) = 'true')
+    WITH CHECK ((SELECT current_setting('app.is_admin', true)) = 'true');
+
 CREATE POLICY team_isolation ON boards
     AS PERMISSIVE FOR ALL TO plaza_app
-    USING      (team_id = (SELECT current_setting('app.team_id', true)::uuid))
-    WITH CHECK (team_id = (SELECT current_setting('app.team_id', true)::uuid));
+    USING      (team_id = (SELECT nullif(current_setting('app.team_id', true), '')::uuid))
+    WITH CHECK (team_id = (SELECT nullif(current_setting('app.team_id', true), '')::uuid));
 
 GRANT DELETE, INSERT, SELECT, UPDATE ON boards TO plaza_app;

@@ -2,10 +2,11 @@ BEGIN;
 
 -- ---- users (password: "password") ----
 
-INSERT INTO users (email, id, password_hash, role) VALUES
-    ('alice@acme.test',   '10000000-0000-0000-0000-000000000001', '$argon2id$v=19$m=19456,t=2,p=1$1sB0QNeu8p/jNe0jabkpqw$CDbafmNyozbuck9iMs76MAlrMYD+PrHh4UC8snU04Go', 'admin'),
-    ('bob@acme.test',     '10000000-0000-0000-0000-000000000002', '$argon2id$v=19$m=19456,t=2,p=1$1sB0QNeu8p/jNe0jabkpqw$CDbafmNyozbuck9iMs76MAlrMYD+PrHh4UC8snU04Go', 'user'),
-    ('carol@globex.test', '10000000-0000-0000-0000-000000000003', '$argon2id$v=19$m=19456,t=2,p=1$1sB0QNeu8p/jNe0jabkpqw$CDbafmNyozbuck9iMs76MAlrMYD+PrHh4UC8snU04Go', 'user')
+INSERT INTO users (email, id, is_admin, password_hash) VALUES
+    ('admin@plaza.test',  '10000000-0000-0000-0000-000000000004', true,  '$argon2id$v=19$m=19456,t=2,p=1$1sB0QNeu8p/jNe0jabkpqw$CDbafmNyozbuck9iMs76MAlrMYD+PrHh4UC8snU04Go'),
+    ('alice@acme.test',   '10000000-0000-0000-0000-000000000001', false, '$argon2id$v=19$m=19456,t=2,p=1$1sB0QNeu8p/jNe0jabkpqw$CDbafmNyozbuck9iMs76MAlrMYD+PrHh4UC8snU04Go'),
+    ('bob@acme.test',     '10000000-0000-0000-0000-000000000002', false, '$argon2id$v=19$m=19456,t=2,p=1$1sB0QNeu8p/jNe0jabkpqw$CDbafmNyozbuck9iMs76MAlrMYD+PrHh4UC8snU04Go'),
+    ('carol@globex.test', '10000000-0000-0000-0000-000000000003', false, '$argon2id$v=19$m=19456,t=2,p=1$1sB0QNeu8p/jNe0jabkpqw$CDbafmNyozbuck9iMs76MAlrMYD+PrHh4UC8snU04Go')
 ON CONFLICT DO NOTHING;
 
 -- ---- teams ----

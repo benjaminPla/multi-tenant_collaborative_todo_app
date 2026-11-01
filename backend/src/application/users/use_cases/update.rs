@@ -2,6 +2,7 @@ use crate::{
     application::users::errors::UserAppError,
     domain::{
         hash::HasherService,
+        sessions::ports::SessionRepo,
         users::{
             ports::{UserRepo, UserRepoError},
             Email,
@@ -22,12 +23,17 @@ pub struct UpdateUserInput {
 
 pub struct UpdateUserUseCase {
     hasher_service: Arc<dyn HasherService>,
+    session_repo:   Arc<dyn SessionRepo>,
     user_repo:      Arc<dyn UserRepo>,
 }
 
 impl UpdateUserUseCase {
-    pub fn new(hasher_service: Arc<dyn HasherService>, user_repo: Arc<dyn UserRepo>) -> Self {
-        Self { hasher_service, user_repo }
+    pub fn new(
+        hasher_service: Arc<dyn HasherService>,
+        session_repo:   Arc<dyn SessionRepo>,
+        user_repo:      Arc<dyn UserRepo>,
+    ) -> Self {
+        Self { hasher_service, session_repo, user_repo }
     }
 
     pub async fn execute(&self, input: UpdateUserInput) -> Result<User, UserAppError> {
@@ -39,11 +45,15 @@ impl UpdateUserUseCase {
         if let Some(email) = email {
             user.email = email;
         }
+        let password_changed = password.is_some();
         if let Some(password) = password {
             user.password_hash = self.hasher_service.hash(&password).await?;
         }
 
         let user = self.user_repo.update(&user).await?;
+        if password_changed {
+            self.session_repo.delete_by_user_id(user.id).await?;
+        }
         Ok(user)
     }
 }

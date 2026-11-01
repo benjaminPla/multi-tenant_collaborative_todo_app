@@ -6,8 +6,16 @@ mod interface;
 
 use axum::Router;
 use config::Config;
-use infrastructure::{argon2_hasher_service::Argon2HasherService, pg_user_repo::PgUserRepo};
-use interface::{app_state::AppState, users::router::users_router};
+use infrastructure::{
+    argon2_hasher_service::Argon2HasherService,
+    pg_session_repo::PgSessionRepo,
+    pg_user_repo::PgUserRepo,
+};
+use interface::{
+    app_state::AppState,
+    auth::router::auth_router,
+    users::router::users_router,
+};
 use std::{net::SocketAddr, sync::Arc, time::Duration};
 
 #[tokio::main]
@@ -25,10 +33,13 @@ async fn main() {
 
     let app_state = AppState {
         hasher_service: Arc::new(Argon2HasherService::new()),
+        session_repo:   Arc::new(PgSessionRepo::new(pool.clone())),
+        session_ttl:    chrono::Duration::seconds(config.session_ttl_secs.into()),
         user_repo:      Arc::new(PgUserRepo::new(pool.clone())),
     };
 
     let app = Router::new()
+        .nest("/auth", auth_router())
         .nest("/users", users_router())
         .with_state(app_state);
 

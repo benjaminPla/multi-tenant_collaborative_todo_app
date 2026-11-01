@@ -15,6 +15,12 @@ pub struct User {
     pub password_hash: PasswordHash,
 }
 
+#[derive(Clone, Debug)]
+pub struct UserCredentials {
+    pub id: UserId,
+    pub password_hash: PasswordHash,
+}
+
 impl User {
     pub fn register(email: Email, password_hash: PasswordHash) -> Self {
         Self {

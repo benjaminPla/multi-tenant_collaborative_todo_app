@@ -10,5 +10,7 @@ pub struct HasherError(#[source] pub BoxError);
 
 #[async_trait]
 pub trait HasherService: Send + Sync {
-    async fn hash(&self, password: &Password) -> Result<PasswordHash, HasherError>;
+    async fn hash(&self, password: &Password)                        -> Result<PasswordHash, HasherError>;
+    async fn verify(&self, password: &Password, hash: &PasswordHash) -> Result<bool, HasherError>;
+    async fn verify_dummy(&self, password: &Password)                -> Result<(), HasherError>;
 }

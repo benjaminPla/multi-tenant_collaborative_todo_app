@@ -8,4 +8,5 @@ pub struct Config {
     pub db_max_connections:      u32,
     pub db_min_connections:      u32,
     pub port:                    u16,
+    pub session_ttl_secs:        u32,
 }

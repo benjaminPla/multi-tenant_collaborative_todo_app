@@ -3,10 +3,26 @@ use crate::domain::users::{
     Email,
     PasswordHash,
     User,
+    UserCredentials,
     UserId,
 };
 use chrono::{DateTime, Utc};
 use uuid::Uuid;
+
+#[derive(sqlx::FromRow)]
+pub struct CredentialsRow {
+    id:            Uuid,
+    password_hash: String,
+}
+
+impl From<CredentialsRow> for UserCredentials {
+    fn from(row: CredentialsRow) -> Self {
+        Self {
+            id:            UserId::from(row.id),
+            password_hash: PasswordHash::new(row.password_hash),
+        }
+    }
+}
 
 #[derive(sqlx::FromRow)]
 pub struct UserRow {

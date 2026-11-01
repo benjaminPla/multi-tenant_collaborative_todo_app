@@ -16,7 +16,8 @@ impl IntoResponse for UserAppError {
             UserAppError::Repo(UserRepoError::EmailTaken)   => StatusCode::CONFLICT,
             UserAppError::Repo(UserRepoError::NotFound)     => StatusCode::NOT_FOUND,
             UserAppError::Hasher(_)
-            | UserAppError::Repo(UserRepoError::Unexpected(_)) => StatusCode::INTERNAL_SERVER_ERROR,
+            | UserAppError::Repo(UserRepoError::Unexpected(_))
+            | UserAppError::Session(_)                     => StatusCode::INTERNAL_SERVER_ERROR,
         };
         let message = match status {
             StatusCode::INTERNAL_SERVER_ERROR => "internal error".to_owned(),

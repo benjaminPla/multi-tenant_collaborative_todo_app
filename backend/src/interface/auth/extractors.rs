@@ -1,0 +1,38 @@
+use crate::{
+    application::auth::{
+        errors::AuthAppError,
+        use_cases::{AuthenticateInput, AuthenticateUseCase},
+    },
+    domain::users::User,
+    interface::{app_state::AppState, auth::cookie::SESSION_COOKIE},
+};
+use axum::{extract::FromRequestParts, http::request::Parts};
+use axum_extra::extract::cookie::CookieJar;
+
+pub struct AdminUser(pub User);
+
+pub struct CurrentUser(pub User);
+
+impl FromRequestParts<AppState> for AdminUser {
+    type Rejection = AuthAppError;
+
+    async fn from_request_parts(parts: &mut Parts, state: &AppState) -> Result<Self, Self::Rejection> {
+        let CurrentUser(user) = CurrentUser::from_request_parts(parts, state).await?;
+        match user.is_admin {
+            true  => Ok(Self(user)),
+            false => Err(AuthAppError::Forbidden),
+        }
+    }
+}
+
+impl FromRequestParts<AppState> for CurrentUser {
+    type Rejection = AuthAppError;
+
+    async fn from_request_parts(parts: &mut Parts, state: &AppState) -> Result<Self, Self::Rejection> {
+        let jar      = CookieJar::from_headers(&parts.headers);
+        let token    = jar.get(SESSION_COOKIE).ok_or(AuthAppError::Unauthenticated)?.value().to_owned();
+        let use_case = AuthenticateUseCase::new(state.session_repo.clone(), state.user_repo.clone());
+        let user     = use_case.execute(AuthenticateInput { token }).await?;
+        Ok(Self(user))
+    }
+}

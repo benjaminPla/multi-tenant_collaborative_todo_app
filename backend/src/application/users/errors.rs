@@ -1,5 +1,6 @@
 use crate::domain::{
     hash::HasherError,
+    sessions::ports::SessionRepoError,
     users::{
         ports::UserRepoError,
         UserError,
@@ -14,4 +15,6 @@ pub enum UserAppError {
     Hasher(#[from] HasherError),
     #[error(transparent)]
     Repo(#[from] UserRepoError),
+    #[error(transparent)]
+    Session(#[from] SessionRepoError),
 }

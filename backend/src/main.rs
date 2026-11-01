@@ -9,11 +9,13 @@ use config::Config;
 use infrastructure::{
     argon2_hasher_service::Argon2HasherService,
     pg_session_repo::PgSessionRepo,
+    pg_team_repo::PgTeamRepo,
     pg_user_repo::PgUserRepo,
 };
 use interface::{
     app_state::AppState,
     auth::router::auth_router,
+    teams::router::teams_router,
     users::router::users_router,
 };
 use std::{net::SocketAddr, sync::Arc, time::Duration};
@@ -35,11 +37,13 @@ async fn main() {
         hasher_service: Arc::new(Argon2HasherService::new()),
         session_repo:   Arc::new(PgSessionRepo::new(pool.clone())),
         session_ttl:    chrono::Duration::seconds(config.session_ttl_secs.into()),
+        team_repo:      Arc::new(PgTeamRepo::new(pool.clone())),
         user_repo:      Arc::new(PgUserRepo::new(pool.clone())),
     };
 
     let app = Router::new()
         .nest("/auth", auth_router())
+        .nest("/teams", teams_router())
         .nest("/users", users_router())
         .with_state(app_state);
 

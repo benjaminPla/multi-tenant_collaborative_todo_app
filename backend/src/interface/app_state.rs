@@ -4,6 +4,7 @@ use crate::domain::{
     hash::HasherService,
     sessions::ports::SessionRepo,
     teams::ports::TeamRepo,
+    todos::ports::TodoRepo,
     users::ports::UserRepo,
 };
 use chrono::Duration;
@@ -17,5 +18,6 @@ pub struct AppState {
     pub session_repo:   Arc<dyn SessionRepo>,
     pub session_ttl:    Duration,
     pub team_repo:      Arc<dyn TeamRepo>,
+    pub todo_repo:      Arc<dyn TodoRepo>,
     pub user_repo:      Arc<dyn UserRepo>,
 }

@@ -3,5 +3,6 @@ pub mod pg_board_repo;
 pub mod pg_pip;
 pub mod pg_session_repo;
 pub mod pg_team_repo;
+pub mod pg_todo_repo;
 pub mod pg_user_repo;
 pub mod tenant;

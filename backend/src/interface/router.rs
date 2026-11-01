@@ -4,6 +4,7 @@ use crate::interface::{
     authz::pep::pep,
     boards::router::boards_router,
     teams::router::teams_router,
+    todos::router::todos_router,
     users::router::users_router,
 };
 use axum::{middleware::from_fn_with_state, Router};
@@ -13,6 +14,7 @@ pub fn app(state: AppState) -> Router {
         .nest("/auth", authn_router())
         .nest("/teams", teams_router())
         .nest("/teams/{id}/boards", boards_router())
+        .nest("/teams/{id}/boards/{board_id}/todos", todos_router())
         .nest("/users", users_router())
         .route_layer(from_fn_with_state(state.clone(), pep))
         .with_state(state)
@@ -27,6 +29,7 @@ mod tests {
         pg_pip::PgPip,
         pg_session_repo::PgSessionRepo,
         pg_team_repo::PgTeamRepo,
+        pg_todo_repo::PgTodoRepo,
         pg_user_repo::PgUserRepo,
     };
     use axum::routing::get;
@@ -44,6 +47,7 @@ mod tests {
             session_repo:   Arc::new(PgSessionRepo::new(pool.clone())),
             session_ttl:    chrono::Duration::hours(1),
             team_repo:      Arc::new(PgTeamRepo::new(pool.clone())),
+            todo_repo:      Arc::new(PgTodoRepo::new(pool.clone())),
             user_repo:      Arc::new(PgUserRepo::new(pool)),
         }
     }
@@ -76,6 +80,11 @@ mod tests {
             ("DELETE", format!("/teams/{ID}/boards/{ID}")),
             ("GET",    format!("/teams/{ID}/boards/{ID}")),
             ("PATCH",  format!("/teams/{ID}/boards/{ID}")),
+            ("GET",    format!("/teams/{ID}/boards/{ID}/todos")),
+            ("POST",   format!("/teams/{ID}/boards/{ID}/todos")),
+            ("DELETE", format!("/teams/{ID}/boards/{ID}/todos/{ID}")),
+            ("GET",    format!("/teams/{ID}/boards/{ID}/todos/{ID}")),
+            ("PATCH",  format!("/teams/{ID}/boards/{ID}/todos/{ID}")),
             ("GET",    format!("/teams/{ID}/members")),
             ("POST",   format!("/teams/{ID}/members")),
             ("DELETE", format!("/teams/{ID}/members/{ID}")),

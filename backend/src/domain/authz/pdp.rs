@@ -13,15 +13,17 @@ pub fn decide(subject: &Subject, action: Action, resource: &Resource) -> Decisio
     let is_self   = matches!(resource, Resource::Member { user_id, .. } if *user_id == subject.id);
 
     let permitted = match action {
-        Action::ListTeams                                            => return Decision::Permit(Scope::Memberships),
-        Action::CreateTeam | Action::ReadCurrentUser                 => true,
-        Action::CreateBoard | Action::ListBoards | Action::ListMembers
-        | Action::ReadBoard | Action::ReadTeam | Action::UpdateBoard => is_member,
-        Action::RemoveMember                                         => is_owner || (is_member && is_self),
+        Action::ListTeams                                           => return Decision::Permit(Scope::Memberships),
+        Action::CreateTeam | Action::ReadCurrentUser                => true,
+        Action::CreateBoard | Action::CreateTodo | Action::DeleteTodo
+        | Action::ListBoards | Action::ListMembers | Action::ListTodos
+        | Action::ReadBoard | Action::ReadTeam | Action::ReadTodo
+        | Action::UpdateBoard | Action::UpdateTodo                  => is_member,
+        Action::RemoveMember                                        => is_owner || (is_member && is_self),
         Action::AddMember | Action::DeleteBoard | Action::DeleteTeam
-        | Action::UpdateMember | Action::UpdateTeam                  => is_owner,
+        | Action::UpdateMember | Action::UpdateTeam                 => is_owner,
         Action::CreateUser | Action::DeleteUser
-        | Action::ListUsers | Action::ReadUser | Action::UpdateUser  => false,
+        | Action::ListUsers | Action::ReadUser | Action::UpdateUser => false,
     };
 
     match permitted {
@@ -35,26 +37,31 @@ mod tests {
     use super::*;
     use crate::domain::{teams::TeamId, users::UserId};
 
-    const ALL: [Action; 20] = [
+    const ALL: [Action; 25] = [
         Action::AddMember,
         Action::CreateBoard,
         Action::CreateTeam,
+        Action::CreateTodo,
         Action::CreateUser,
         Action::DeleteBoard,
         Action::DeleteTeam,
+        Action::DeleteTodo,
         Action::DeleteUser,
         Action::ListBoards,
         Action::ListMembers,
         Action::ListTeams,
+        Action::ListTodos,
         Action::ListUsers,
         Action::ReadBoard,
         Action::ReadCurrentUser,
         Action::ReadTeam,
+        Action::ReadTodo,
         Action::ReadUser,
         Action::RemoveMember,
         Action::UpdateBoard,
         Action::UpdateMember,
         Action::UpdateTeam,
+        Action::UpdateTodo,
         Action::UpdateUser,
     ];
 
@@ -82,7 +89,7 @@ mod tests {
     fn member_reads_but_does_not_manage() {
         let member = subject(false, Some(TeamRole::Member));
         let team   = Resource::Team(TeamId::generate());
-        for action in [Action::CreateBoard, Action::ListBoards, Action::ListMembers, Action::ReadBoard, Action::ReadTeam, Action::UpdateBoard] {
+        for action in [Action::CreateBoard, Action::CreateTodo, Action::DeleteTodo, Action::ListBoards, Action::ListMembers, Action::ListTodos, Action::ReadBoard, Action::ReadTeam, Action::ReadTodo, Action::UpdateBoard, Action::UpdateTodo] {
             assert_eq!(decide(&member, action, &team), PERMIT, "{action:?}");
         }
         for action in [Action::AddMember, Action::DeleteBoard, Action::DeleteTeam, Action::UpdateTeam] {
@@ -104,7 +111,7 @@ mod tests {
     fn non_member_is_denied_team_actions() {
         let outsider = subject(false, None);
         let team     = Resource::Team(TeamId::generate());
-        for action in [Action::ListBoards, Action::ListMembers, Action::ReadBoard, Action::ReadTeam, Action::UpdateTeam] {
+        for action in [Action::ListBoards, Action::ListMembers, Action::ListTodos, Action::ReadBoard, Action::ReadTeam, Action::ReadTodo, Action::UpdateTeam, Action::UpdateTodo] {
             assert_eq!(decide(&outsider, action, &team), Decision::Deny, "{action:?}");
         }
         assert_eq!(decide(&outsider, Action::CreateTeam, &Resource::System), PERMIT);

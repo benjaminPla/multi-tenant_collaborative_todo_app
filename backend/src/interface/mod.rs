@@ -4,4 +4,5 @@ pub mod authz;
 pub mod boards;
 pub mod router;
 pub mod teams;
+pub mod todos;
 pub mod users;

@@ -11,6 +11,7 @@ use infrastructure::{
     pg_pip::PgPip,
     pg_session_repo::PgSessionRepo,
     pg_team_repo::PgTeamRepo,
+    pg_todo_repo::PgTodoRepo,
     pg_user_repo::PgUserRepo,
 };
 use interface::{app_state::AppState, router::app};
@@ -36,6 +37,7 @@ async fn main() {
         session_repo:   Arc::new(PgSessionRepo::new(pool.clone())),
         session_ttl:    chrono::Duration::seconds(config.session_ttl_secs.into()),
         team_repo:      Arc::new(PgTeamRepo::new(pool.clone())),
+        todo_repo:      Arc::new(PgTodoRepo::new(pool.clone())),
         user_repo:      Arc::new(PgUserRepo::new(pool.clone())),
     };
 

@@ -1,0 +1,21 @@
+/* ── toasts ───────────────────────────────────────────────────────────── */
+.toasts {
+  --toast-width: 22rem;
+
+  bottom:         var(--space-lg);
+  display:        flex;
+  flex-direction: column;
+  gap:            var(--space-sm);
+  position:       fixed;
+  right:          var(--space-lg);
+  width:          var(--toast-width);
+  z-index:        var(--layer-toast);
+}
+
+.toast {
+  background:    var(--color-text);
+  border-radius: var(--radius-md);
+  color:         var(--color-surface);
+  font-size:     var(--font-size-sm);
+  padding:       var(--space-sm) var(--space-md);
+}

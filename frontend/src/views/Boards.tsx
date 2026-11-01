@@ -6,14 +6,19 @@ import { useAction, useLoad } from '../hooks.ts'
 import { Board } from './Board/Board.tsx'
 import { useCallback, useState, type FormEvent } from 'react'
 
-export function Boards({ teamId }: { teamId: string }) {
+type Props = {
+  teamId: string
+  userId: string
+}
+
+export function Boards({ teamId, userId }: Props) {
   const boards              = useLoad(useCallback(() => api.boards.list(teamId), [teamId]))
   const action              = useAction(boards.reload)
   const [openId, setOpenId] = useState<string | null>(null)
   const open                = boards.data?.find((board) => board.id === openId)
 
   if (open) {
-    return <Board board={open} onBack={() => setOpenId(null)} />
+    return <Board board={open} onBack={() => setOpenId(null)} userId={userId} />
   }
 
   const create = async (event: FormEvent<HTMLFormElement>) => {

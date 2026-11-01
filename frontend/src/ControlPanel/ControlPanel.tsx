@@ -32,7 +32,7 @@ export function ControlPanel({ onLogout, user }: Props) {
   const content = () => {
     switch (view) {
       case 'boards':
-        return team ? <Boards key={team.id} teamId={team.id} /> : needsTeam('Boards')
+        return team ? <Boards key={team.id} teamId={team.id} userId={user.id} /> : needsTeam('Boards')
       case 'members':
         return team ? <Members key={team.id} teamId={team.id} userId={user.id} /> : needsTeam('Members')
       case 'teams':

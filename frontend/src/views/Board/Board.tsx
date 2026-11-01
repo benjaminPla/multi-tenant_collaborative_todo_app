@@ -1,13 +1,16 @@
 import { api, ApiError, isConflict } from '../../api.ts'
 import { Page } from '../../components/Page/Page.tsx'
-import { useAction, useLoad } from '../../hooks.ts'
-import type { Board as BoardType, Todo, TodoPatch, TodoStatus } from '../../types.ts'
+import { Toasts } from '../../components/Toasts/Toasts.tsx'
+import { useAction, useLoad, useNotices } from '../../hooks.ts'
+import type { Board as BoardType, Member, Todo, TodoPatch, TodoStatus } from '../../types.ts'
 import './Board.css'
+import { useTodoEvents, type TodoEvent, type TodoEventType } from './useTodoEvents.ts'
 import { useCallback, useState, type DragEvent, type FormEvent } from 'react'
 
 type Props = {
   board:  BoardType
   onBack: () => void
+  userId: string
 }
 
 const COLUMNS: { label: string; status: TodoStatus }[] = [
@@ -16,11 +19,56 @@ const COLUMNS: { label: string; status: TodoStatus }[] = [
   { label: 'Done',        status: 'done' },
 ]
 
-export function Board({ board, onBack }: Props) {
-  const todos           = useLoad(useCallback(() => api.todos.list(board.team_id, board.id), [board.team_id, board.id]))
-  const members         = useLoad(useCallback(() => api.members.list(board.team_id), [board.team_id]))
-  const action          = useAction(todos.reload)
-  const [over, setOver] = useState<TodoStatus | null>(null)
+const LABELS = Object.fromEntries(COLUMNS.map((column) => [column.status, column.label])) as Record<TodoStatus, string>
+
+function apply(todos: Todo[], type: TodoEventType, todo: Todo): Todo[] {
+  if (type === 'deleted') {
+    return todos.filter((t) => t.id !== todo.id)
+  }
+  const current = todos.find((t) => t.id === todo.id)
+  if (!current) {
+    return [...todos, todo]
+  }
+  return current.version < todo.version ? todos.map((t) => (t.id === todo.id ? todo : t)) : todos
+}
+
+function describe(type: TodoEventType, before: Todo | undefined, event: TodoEvent, members: Member[] | undefined) {
+  const who   = event.actor.email
+  const title = `"${event.todo.title}"`
+  if (type === 'created') {
+    return `${who} added ${title}`
+  }
+  if (type === 'deleted') {
+    return `${who} deleted ${title}`
+  }
+  if (before && before.status !== event.todo.status) {
+    return `${who} moved ${title} to ${LABELS[event.todo.status]}`
+  }
+  if (before && before.assignee_id !== event.todo.assignee_id) {
+    const assignee = members?.find((member) => member.user_id === event.todo.assignee_id)?.email
+    return assignee ? `${who} assigned ${title} to ${assignee}` : `${who} unassigned ${title}`
+  }
+  return `${who} updated ${title}`
+}
+
+export function Board({ board, onBack, userId }: Props) {
+  const todos               = useLoad(useCallback(() => api.todos.list(board.team_id, board.id), [board.team_id, board.id]))
+  const members             = useLoad(useCallback(() => api.members.list(board.team_id), [board.team_id]))
+  const action              = useAction(todos.reload)
+  const [over, setOver]     = useState<TodoStatus | null>(null)
+  const { notices, notify } = useNotices()
+
+  useTodoEvents(board.team_id, board.id, {
+    onClosed: () => notify('live updates stopped, reload the page'),
+    onEvent:  (type, event) => {
+      const before = todos.data?.find((todo) => todo.id === event.todo.id)
+      todos.update((list) => apply(list, type, event.todo))
+      if (event.actor.id !== userId) {
+        notify(describe(type, before, event, members.data))
+      }
+    },
+    onResync: todos.reload,
+  })
 
   const create = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -56,7 +104,7 @@ export function Board({ board, onBack }: Props) {
     if (!todo || todo.status === status) {
       return
     }
-    todos.setData(todos.data!.map((t) => (t.id === todo.id ? { ...t, status } : t)))
+    todos.update((list) => list.map((t) => (t.id === todo.id ? { ...t, status } : t)))
     update(todo, { status })
   }
 
@@ -140,6 +188,7 @@ export function Board({ board, onBack }: Props) {
           )
         })}
       </div>
+      <Toasts notices={notices} />
     </Page>
   )
 }

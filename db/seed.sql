@@ -1,5 +1,3 @@
-BEGIN;
-
 -- ---- users (password: "password") ----
 
 INSERT INTO users (email, id, is_admin, password_hash) VALUES
@@ -37,5 +35,3 @@ INSERT INTO todos (assignee_id, board_id, description, id, status, team_id, titl
     (NULL,                                   '30000000-0000-0000-0000-000000000001', '',                       '40000000-0000-0000-0000-000000000003', 'done',        '20000000-0000-0000-0000-000000000001', 'Buy domain'),
     ('10000000-0000-0000-0000-000000000003', '30000000-0000-0000-0000-000000000002', 'Must never leak to Acme', '40000000-0000-0000-0000-000000000004', 'todo',        '20000000-0000-0000-0000-000000000002', 'Globex secret plan')
 ON CONFLICT DO NOTHING;
-
-COMMIT;

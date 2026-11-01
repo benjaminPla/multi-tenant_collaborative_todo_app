@@ -3,6 +3,8 @@ mod delete;
 mod find_by_id;
 mod list;
 mod row;
+#[cfg(test)]
+mod tests;
 mod update;
 
 use crate::domain::{

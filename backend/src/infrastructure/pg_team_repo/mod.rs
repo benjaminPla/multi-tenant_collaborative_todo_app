@@ -8,6 +8,8 @@ mod list_members;
 mod lock_member;
 mod remove_member;
 mod row;
+#[cfg(test)]
+mod tests;
 mod update;
 mod update_member_role;
 

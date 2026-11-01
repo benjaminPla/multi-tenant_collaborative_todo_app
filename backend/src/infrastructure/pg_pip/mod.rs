@@ -1,4 +1,6 @@
 mod team_role;
+#[cfg(test)]
+mod tests;
 
 use crate::domain::{
     authz::ports::{Pip, PipError},

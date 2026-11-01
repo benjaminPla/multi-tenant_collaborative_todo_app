@@ -7,3 +7,5 @@ pub mod pg_team_repo;
 pub mod pg_todo_repo;
 pub mod pg_user_repo;
 pub mod tenant;
+#[cfg(test)]
+pub mod test_support;

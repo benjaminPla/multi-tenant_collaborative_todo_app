@@ -14,7 +14,6 @@ impl IntoResponse for TeamAppError {
         let status = match &self {
             TeamAppError::Domain(_)
             | TeamAppError::User(_)                           => StatusCode::UNPROCESSABLE_ENTITY,
-            TeamAppError::Forbidden                           => StatusCode::FORBIDDEN,
             TeamAppError::Repo(TeamRepoError::AlreadyMember)
             | TeamAppError::Repo(TeamRepoError::LastOwner)    => StatusCode::CONFLICT,
             TeamAppError::Repo(TeamRepoError::MemberNotFound)

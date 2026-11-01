@@ -15,7 +15,6 @@ use crate::{
     },
     interface::{
         app_state::AppState,
-        authn::extractors::AdminUser,
         users::dto::{CreateUserRequest, UpdateUserRequest, UserResponse},
     },
 };
@@ -27,7 +26,6 @@ use axum::{
 use uuid::Uuid;
 
 pub async fn create(
-    _admin:       AdminUser,
     State(state): State<AppState>,
     Json(body):   Json<CreateUserRequest>,
 ) -> Result<(StatusCode, Json<UserResponse>), UserAppError> {
@@ -37,7 +35,6 @@ pub async fn create(
 }
 
 pub async fn delete(
-    _admin:       AdminUser,
     State(state): State<AppState>,
     Path(id):     Path<Uuid>,
 ) -> Result<StatusCode, UserAppError> {
@@ -47,7 +44,6 @@ pub async fn delete(
 }
 
 pub async fn get(
-    _admin:       AdminUser,
     State(state): State<AppState>,
     Path(id):     Path<Uuid>,
 ) -> Result<Json<UserResponse>, UserAppError> {
@@ -56,17 +52,13 @@ pub async fn get(
     Ok(Json(user.into()))
 }
 
-pub async fn list(
-    _admin:       AdminUser,
-    State(state): State<AppState>,
-) -> Result<Json<Vec<UserResponse>>, UserAppError> {
+pub async fn list(State(state): State<AppState>) -> Result<Json<Vec<UserResponse>>, UserAppError> {
     let use_case = ListUsersUseCase::new(state.user_repo);
     let users    = use_case.execute().await?;
     Ok(Json(users.into_iter().map(UserResponse::from).collect()))
 }
 
 pub async fn update(
-    _admin:       AdminUser,
     State(state): State<AppState>,
     Path(id):     Path<Uuid>,
     Json(body):   Json<UpdateUserRequest>,

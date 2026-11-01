@@ -8,8 +8,8 @@ use crate::{
         authn::{
             cookie::{clear_session_cookie, session_cookie, SESSION_COOKIE},
             dto::LoginRequest,
-            extractors::CurrentUser,
         },
+        authz::authorized::Authorized,
         users::dto::UserResponse,
     },
 };
@@ -37,6 +37,6 @@ pub async fn logout(
     Ok((StatusCode::NO_CONTENT, jar.remove(clear_session_cookie())))
 }
 
-pub async fn me(CurrentUser(user): CurrentUser) -> Json<UserResponse> {
-    Json(user.into())
+pub async fn me(Authorized { actor, .. }: Authorized) -> Json<UserResponse> {
+    Json(actor.into())
 }

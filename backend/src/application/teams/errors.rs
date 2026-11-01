@@ -7,8 +7,6 @@ use crate::domain::{
 pub enum TeamAppError {
     #[error(transparent)]
     Domain(#[from] TeamError),
-    #[error("forbidden")]
-    Forbidden,
     #[error(transparent)]
     Repo(#[from] TeamRepoError),
     #[error(transparent)]

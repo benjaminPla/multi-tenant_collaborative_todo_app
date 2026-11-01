@@ -6,8 +6,6 @@ use crate::domain::{
 
 #[derive(Debug, thiserror::Error)]
 pub enum AuthnAppError {
-    #[error("forbidden")]
-    Forbidden,
     #[error(transparent)]
     Hasher(#[from] HasherError),
     #[error("invalid credentials")]

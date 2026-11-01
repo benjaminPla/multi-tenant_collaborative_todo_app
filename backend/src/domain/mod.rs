@@ -1,3 +1,4 @@
+pub mod authz;
 pub mod hash;
 pub mod sessions;
 pub mod teams;

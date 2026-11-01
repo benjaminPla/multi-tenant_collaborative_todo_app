@@ -9,7 +9,6 @@ use serde_json::json;
 impl IntoResponse for AuthnAppError {
     fn into_response(self) -> Response {
         let status = match &self {
-            AuthnAppError::Forbidden         => StatusCode::FORBIDDEN,
             AuthnAppError::InvalidCredentials
             | AuthnAppError::Unauthenticated => StatusCode::UNAUTHORIZED,
             AuthnAppError::Hasher(_)

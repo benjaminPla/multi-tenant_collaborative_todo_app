@@ -2,7 +2,6 @@ mod add_member;
 mod create;
 mod delete;
 mod find_by_id;
-mod find_role;
 mod list;
 mod list_by_user_id;
 mod list_members;
@@ -51,10 +50,6 @@ impl TeamRepo for PgTeamRepo {
 
     async fn find_by_id(&self, id: TeamId) -> Result<Option<Team>, TeamRepoError> {
         find_by_id::find_by_id(&self.pool, id).await
-    }
-
-    async fn find_role(&self, id: TeamId, user_id: UserId) -> Result<Option<TeamRole>, TeamRepoError> {
-        find_role::find_role(&self.pool, id, user_id).await
     }
 
     async fn list(&self) -> Result<Vec<Team>, TeamRepoError> {

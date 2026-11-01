@@ -9,7 +9,7 @@ Date: 2026-10-30
 - Two roles: `plaza_owner` (owns tables, runs migrations) and `plaza_app` (API, `NOSUPERUSER NOBYPASSRLS`).
 - `ENABLE` + `FORCE ROW LEVEL SECURITY` on team-owned tables.
 - Policy: `team_id = (SELECT nullif(current_setting('app.team_id', true), '')::uuid)` for both `USING` and `WITH CHECK`. `nullif` because a pooled connection returns `''` once a transaction-local setting ends.
-- Admins: second permissive policy on `app.is_admin`, see [04](04-admin-access.md).
+- Admins: second permissive policy on `app.is_admin`, see [04](04-authorization.md).
 - Per request: `BEGIN` → `set_config('app.team_id', $1, true)` → queries → `COMMIT`. Transaction-scoped, pool-safe.
 - Global tables have no RLS; accessed only by narrow queries filtered by `user_id`.
 

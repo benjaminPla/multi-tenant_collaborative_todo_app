@@ -9,21 +9,7 @@ use crate::{
 use axum::{extract::FromRequestParts, http::request::Parts};
 use axum_extra::extract::cookie::CookieJar;
 
-pub struct AdminUser(pub User);
-
 pub struct CurrentUser(pub User);
-
-impl FromRequestParts<AppState> for AdminUser {
-    type Rejection = AuthnAppError;
-
-    async fn from_request_parts(parts: &mut Parts, state: &AppState) -> Result<Self, Self::Rejection> {
-        let CurrentUser(user) = CurrentUser::from_request_parts(parts, state).await?;
-        match user.is_admin {
-            true  => Ok(Self(user)),
-            false => Err(AuthnAppError::Forbidden),
-        }
-    }
-}
 
 impl FromRequestParts<AppState> for CurrentUser {
     type Rejection = AuthnAppError;

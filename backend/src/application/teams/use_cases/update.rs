@@ -1,23 +1,18 @@
 use crate::{
-    application::teams::{access::require_role, errors::TeamAppError},
-    domain::{
-        teams::{
-            ports::{TeamRepo, TeamRepoError},
-            Team,
-            TeamId,
-            TeamName,
-            TeamRole,
-        },
-        users::User,
+    application::teams::errors::TeamAppError,
+    domain::teams::{
+        ports::{TeamRepo, TeamRepoError},
+        Team,
+        TeamId,
+        TeamName,
     },
 };
 use std::sync::Arc;
 use uuid::Uuid;
 
 pub struct UpdateTeamInput {
-    pub actor: User,
-    pub id:    Uuid,
-    pub name:  String,
+    pub id:   Uuid,
+    pub name: String,
 }
 
 pub struct UpdateTeamUseCase {
@@ -32,7 +27,6 @@ impl UpdateTeamUseCase {
     pub async fn execute(&self, input: UpdateTeamInput) -> Result<Team, TeamAppError> {
         let id   = TeamId::from(input.id);
         let name = TeamName::parse(&input.name)?;
-        require_role(&*self.team_repo, &input.actor, id, TeamRole::Owner).await?;
 
         let mut team = self.team_repo.find_by_id(id).await?.ok_or(TeamRepoError::NotFound)?;
         team.name    = name;

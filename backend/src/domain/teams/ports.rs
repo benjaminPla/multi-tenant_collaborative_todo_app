@@ -27,7 +27,6 @@ pub trait TeamRepo: Send + Sync {
     async fn create(&self, team: &Team, owner_id: UserId)                           -> Result<Team, TeamRepoError>;
     async fn delete(&self, id: TeamId)                                              -> Result<(), TeamRepoError>;
     async fn find_by_id(&self, id: TeamId)                                          -> Result<Option<Team>, TeamRepoError>;
-    async fn find_role(&self, id: TeamId, user_id: UserId)                          -> Result<Option<TeamRole>, TeamRepoError>;
     async fn list(&self)                                                            -> Result<Vec<Team>, TeamRepoError>;
     async fn list_by_user_id(&self, user_id: UserId)                                -> Result<Vec<Team>, TeamRepoError>;
     async fn list_members(&self, id: TeamId)                                        -> Result<Vec<Member>, TeamRepoError>;

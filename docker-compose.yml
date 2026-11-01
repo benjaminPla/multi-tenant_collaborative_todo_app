@@ -1,0 +1,71 @@
+name: plaza
+
+services:
+  backend:
+    build:
+      context: backend
+      target: runtime
+    depends_on:
+      seed:
+        condition: service_completed_successfully
+    environment:
+      DATABASE_URL: postgres://plaza_app:plaza_app@db:5432/plaza
+      DB_ACQUIRE_TIMEOUT_SECS: 5
+      DB_IDLE_TIMEOUT_SECS: 600
+      DB_MAX_CONNECTIONS: 10
+      DB_MIN_CONNECTIONS: 1
+      HOST: 0.0.0.0
+      PORT: 3000
+      SESSION_TTL_SECS: 86400
+
+  db:
+    environment:
+      POSTGRES_DB: plaza
+      POSTGRES_PASSWORD: plaza_owner
+      POSTGRES_USER: plaza_owner
+    healthcheck:
+      interval: 2s
+      retries: 30
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U plaza_owner -d plaza"]
+      timeout: 3s
+    image: postgres:18-alpine
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - ./db/roles.sql:/docker-entrypoint-initdb.d/roles.sql:ro
+      - db_data:/var/lib/postgresql
+
+  frontend:
+    build:
+      context: frontend
+      target: runtime
+    depends_on:
+      - backend
+    environment:
+      BACKEND_URL: http://backend:3000
+    ports:
+      - "127.0.0.1:8080:80"
+
+  migrate:
+    build:
+      context: backend
+      target: migrate
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgres://plaza_owner:plaza_owner@db:5432/plaza
+
+  seed:
+    command: ["psql", "-h", "db", "-U", "plaza_owner", "-d", "plaza", "-v", "ON_ERROR_STOP=1", "-q", "-f", "/seed.sql"]
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    environment:
+      PGPASSWORD: plaza_owner
+    image: postgres:18-alpine
+    volumes:
+      - ./db/seed.sql:/seed.sql:ro
+
+volumes:
+  db_data:

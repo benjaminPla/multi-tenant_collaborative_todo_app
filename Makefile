@@ -18,8 +18,14 @@ be-up:
 	DB_MAX_CONNECTIONS=10 \
 	DB_MIN_CONNECTIONS=1 \
 	HOST=127.0.0.1 \
+	HTTP_BODY_LIMIT_BYTES=65536 \
+	HTTP_BODY_TIMEOUT_SECS=10 \
+	HTTP_CONCURRENCY_LIMIT=32 \
+	HTTP_TIMEOUT_SECS=10 \
 	PORT=$(BACKEND_PORT) \
+	RUST_LOG=info \
 	SESSION_TTL_SECS=86400 \
+	SSE_MAX_CONNECTIONS=256 \
 	cargo watch -q -x run
 
 # ── db ───────────────────────────────────────────────────────────────────

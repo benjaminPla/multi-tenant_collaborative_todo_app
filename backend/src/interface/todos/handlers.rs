@@ -28,9 +28,10 @@ use crate::{
 use axum::{
     extract::{Path, State},
     http::StatusCode,
-    response::IntoResponse,
+    response::{IntoResponse, Response},
     Json,
 };
+use serde_json::json;
 use uuid::Uuid;
 
 pub async fn create(
@@ -68,10 +69,13 @@ pub async fn delete(
 pub async fn events(
     State(state):              State<AppState>,
     Path((team_id, board_id)): Path<(Uuid, Uuid)>,
-) -> Result<impl IntoResponse, TodoAppError> {
+) -> Result<Response, TodoAppError> {
+    let Ok(permit) = state.sse_permits.clone().try_acquire_owned() else {
+        return Ok((StatusCode::SERVICE_UNAVAILABLE, Json(json!({ "error": "too many live connections" }))).into_response());
+    };
     let use_case = SubscribeTodosUseCase::new(state.board_repo, state.todo_events);
     let feed     = use_case.execute(SubscribeTodosInput { board_id, team_id }).await?;
-    Ok(([("x-accel-buffering", "no")], stream::sse(feed, state.shutdown)))
+    Ok(([("x-accel-buffering", "no")], stream::sse(feed, permit, state.shutdown)).into_response())
 }
 
 pub async fn get(

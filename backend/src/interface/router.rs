@@ -48,6 +48,7 @@ mod tests {
             session_repo:   Arc::new(PgSessionRepo::new(pool.clone())),
             session_ttl:    chrono::Duration::hours(1),
             shutdown:       tokio::sync::watch::channel(false).1,
+            sse_permits:    Arc::new(tokio::sync::Semaphore::new(1)),
             team_repo:      Arc::new(PgTeamRepo::new(pool.clone())),
             todo_events:    Arc::new(BroadcastTodoEvents::new()),
             todo_repo:      Arc::new(PgTodoRepo::new(pool.clone())),

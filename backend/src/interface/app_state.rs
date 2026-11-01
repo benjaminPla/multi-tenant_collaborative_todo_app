@@ -9,7 +9,7 @@ use crate::domain::{
 };
 use chrono::Duration;
 use std::sync::Arc;
-use tokio::sync::watch;
+use tokio::sync::{watch, Semaphore};
 
 #[derive(Clone)]
 pub struct AppState {
@@ -19,6 +19,7 @@ pub struct AppState {
     pub session_repo:   Arc<dyn SessionRepo>,
     pub session_ttl:    Duration,
     pub shutdown:       watch::Receiver<bool>,
+    pub sse_permits:    Arc<Semaphore>,
     pub team_repo:      Arc<dyn TeamRepo>,
     pub todo_events:    Arc<dyn TodoEvents>,
     pub todo_repo:      Arc<dyn TodoRepo>,

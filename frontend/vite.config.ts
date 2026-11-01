@@ -1,7 +1,22 @@
 import react from '@vitejs/plugin-react'
-import { defineConfig } from 'vite'
+import { defineConfig, type UserConfig } from 'vite'
 
-// https://vite.dev/config/
-export default defineConfig({
-  plugins: [react()],
+export default defineConfig(({ command }): UserConfig => {
+  if (command === 'build') {
+    return { plugins: [react()] }
+  }
+
+  const target = process.env.BACKEND_URL
+  if (!target) {
+    throw new Error('BACKEND_URL is required for the dev server')
+  }
+
+  return {
+    plugins: [react()],
+    server: {
+      proxy: {
+        '/api': { rewrite: (path) => path.replace(/^\/api/, ''), target },
+      },
+    },
+  }
 })

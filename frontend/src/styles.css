@@ -1,0 +1,283 @@
+/* ── colors ───────────────────────────────────────────────────────────── */
+:root {
+  --color-accent:        #3e63dd;
+  --color-accent-hover:  #3358d4;
+  --color-accent-text:   #ffffff;
+  --color-bg:            #f6f7f9;
+  --color-border:        #e2e5ea;
+  --color-danger:        #e5484d;
+  --color-surface:       #ffffff;
+  --color-surface-hover: #f0f2f5;
+  --color-text:          #1c2024;
+  --color-text-muted:    #60646c;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-accent:        #5472e4;
+    --color-accent-hover:  #6e86ea;
+    --color-accent-text:   #ffffff;
+    --color-bg:            #111113;
+    --color-border:        #2e3035;
+    --color-danger:        #ec5d5e;
+    --color-surface:       #18191b;
+    --color-surface-hover: #212225;
+    --color-text:          #edeef0;
+    --color-text-muted:    #b0b4ba;
+  }
+}
+
+/* ── fonts ────────────────────────────────────────────────────────────── */
+:root {
+  --font-family:      system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-line-height: 1.5;
+  --font-size-lg:     1.25rem;
+  --font-size-md:     0.9375rem;
+  --font-size-sm:     0.8125rem;
+  --font-weight-bold: 600;
+}
+
+/* ── spacing ──────────────────────────────────────────────────────────── */
+:root {
+  --space-lg: 1.5rem;
+  --space-md: 1rem;
+  --space-sm: 0.5rem;
+  --space-xl: 2.5rem;
+  --space-xs: 0.25rem;
+}
+
+/* ── borders ──────────────────────────────────────────────────────────── */
+:root {
+  --border:       1px solid var(--color-border);
+  --focus-offset: 2px;
+  --focus-ring:   2px solid var(--color-accent);
+  --radius-lg:    10px;
+  --radius-md:    6px;
+}
+
+/* ── layout ───────────────────────────────────────────────────────────── */
+:root {
+  --full-height:   100vh;
+  --full-width:    100%;
+  --input-height:  2.25rem;
+  --login-width:   22rem;
+  --shell-columns: var(--sidebar-width) 1fr;
+  --shell-rows:    var(--topbar-height) 1fr;
+  --sidebar-width: 14rem;
+  --topbar-height: 3.5rem;
+}
+
+/* ── motion ───────────────────────────────────────────────────────────── */
+:root {
+  --transition: 120ms ease;
+}
+
+/* ── states ───────────────────────────────────────────────────────────── */
+:root {
+  --disabled-opacity: 0.6;
+}
+
+/* ── base ─────────────────────────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+}
+
+body {
+  background:  var(--color-bg);
+  color:       var(--color-text);
+  font-family: var(--font-family);
+  font-size:   var(--font-size-md);
+  line-height: var(--font-line-height);
+}
+
+button,
+input {
+  color: inherit;
+  font:  inherit;
+}
+
+:focus-visible {
+  outline:        var(--focus-ring);
+  outline-offset: var(--focus-offset);
+}
+
+/* ── shell ────────────────────────────────────────────────────────────── */
+.shell {
+  display:               grid;
+  grid-template-areas:   "sidebar topbar" "sidebar main";
+  grid-template-columns: var(--shell-columns);
+  grid-template-rows:    var(--shell-rows);
+  min-height:            var(--full-height);
+}
+
+/* ── sidebar ──────────────────────────────────────────────────────────── */
+.sidebar {
+  background:   var(--color-surface);
+  border-right: var(--border);
+  grid-area:    sidebar;
+  padding:      var(--space-md);
+}
+
+.sidebar__brand {
+  font-size:     var(--font-size-lg);
+  font-weight:   var(--font-weight-bold);
+  margin-bottom: var(--space-lg);
+  padding:       0 var(--space-sm);
+}
+
+.sidebar__nav {
+  display:        flex;
+  flex-direction: column;
+  gap:            var(--space-xs);
+  list-style:     none;
+  padding:        0;
+}
+
+.sidebar__link {
+  background:    none;
+  border:        none;
+  border-radius: var(--radius-md);
+  color:         var(--color-text-muted);
+  cursor:        pointer;
+  padding:       var(--space-sm);
+  text-align:    left;
+  transition:    background var(--transition), color var(--transition);
+  width:         var(--full-width);
+}
+
+.sidebar__link:hover {
+  background: var(--color-surface-hover);
+  color:      var(--color-text);
+}
+
+.sidebar__link[aria-current="page"] {
+  background:  var(--color-surface-hover);
+  color:       var(--color-text);
+  font-weight: var(--font-weight-bold);
+}
+
+/* ── topbar ───────────────────────────────────────────────────────────── */
+.topbar {
+  align-items:     center;
+  background:      var(--color-surface);
+  border-bottom:   var(--border);
+  display:         flex;
+  gap:             var(--space-md);
+  grid-area:       topbar;
+  justify-content: flex-end;
+  padding:         0 var(--space-lg);
+}
+
+.topbar__user {
+  color:     var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+/* ── page ─────────────────────────────────────────────────────────────── */
+.page {
+  grid-area: main;
+  padding:   var(--space-lg);
+}
+
+.page__header {
+  align-items:     center;
+  display:         flex;
+  justify-content: space-between;
+  margin-bottom:   var(--space-lg);
+}
+
+.page__title {
+  font-size:   var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+}
+
+/* ── buttons ──────────────────────────────────────────────────────────── */
+.button {
+  background:    var(--color-surface);
+  border:        var(--border);
+  border-radius: var(--radius-md);
+  cursor:        pointer;
+  height:        var(--input-height);
+  padding:       0 var(--space-md);
+  transition:    background var(--transition);
+}
+
+.button:hover {
+  background: var(--color-surface-hover);
+}
+
+.button:disabled {
+  cursor:  not-allowed;
+  opacity: var(--disabled-opacity);
+}
+
+.button--primary {
+  background:   var(--color-accent);
+  border-color: var(--color-accent);
+  color:        var(--color-accent-text);
+}
+
+.button--primary:hover {
+  background: var(--color-accent-hover);
+}
+
+/* ── forms ────────────────────────────────────────────────────────────── */
+.field {
+  display:        flex;
+  flex-direction: column;
+  gap:            var(--space-xs);
+}
+
+.field__label {
+  color:     var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+.field__input {
+  background:    var(--color-surface);
+  border:        var(--border);
+  border-radius: var(--radius-md);
+  height:        var(--input-height);
+  padding:       0 var(--space-sm);
+}
+
+.form__error {
+  color:     var(--color-danger);
+  font-size: var(--font-size-sm);
+}
+
+/* ── empty state ──────────────────────────────────────────────────────── */
+.empty {
+  background:    var(--color-surface);
+  border:        var(--border);
+  border-radius: var(--radius-lg);
+  color:         var(--color-text-muted);
+  padding:       var(--space-xl);
+  text-align:    center;
+}
+
+/* ── login ────────────────────────────────────────────────────────────── */
+.login {
+  display:     grid;
+  min-height:  var(--full-height);
+  place-items: center;
+}
+
+.login__card {
+  background:     var(--color-surface);
+  border:         var(--border);
+  border-radius:  var(--radius-lg);
+  display:        flex;
+  flex-direction: column;
+  gap:            var(--space-md);
+  padding:        var(--space-xl);
+  width:          var(--login-width);
+}
+
+.login__title {
+  font-size:   var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+}

@@ -4,29 +4,22 @@ concurrency:
 
 jobs:
   deploy:
-    needs: migrate
+    needs: [integration_test, migrate, unit_test]
     runs-on: ubuntu-24.04
     steps:
       - run: echo "deploy backend and frontend here"
 
+  integration_test:
+    needs: migrate
+    uses: ./.github/workflows/integration_test.yml
+
   migrate:
-    environment: production
-    runs-on: ubuntu-24.04
-    steps:
-      - uses: actions/checkout@v4
+    secrets: inherit
+    uses: ./.github/workflows/migrate.yml
 
-      - id: cache
-        uses: actions/cache@v4
-        with:
-          key: sqlx-cli-0.9-${{ runner.os }}
-          path: ~/.cargo/bin/sqlx
-
-      - if: steps.cache.outputs.cache-hit != 'true'
-        run: cargo install sqlx-cli --locked --no-default-features --features postgres,rustls --version ^0.9
-
-      - env:
-          DATABASE_OWNER_URL: ${{ secrets.DATABASE_OWNER_URL }}
-        run: db/migrate.sh
+  unit_test:
+    needs: migrate
+    uses: ./.github/workflows/unit_test.yml
 
 name: deploy
 

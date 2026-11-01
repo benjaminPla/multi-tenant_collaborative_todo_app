@@ -1,0 +1,27 @@
+jobs:
+  migrate:
+    environment: production
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - id: cache
+        uses: actions/cache@v4
+        with:
+          key: sqlx-cli-0.9-${{ runner.os }}
+          path: ~/.cargo/bin/sqlx
+
+      - if: steps.cache.outputs.cache-hit != 'true'
+        run: cargo install sqlx-cli --locked --no-default-features --features postgres,rustls --version ^0.9
+
+      - env:
+          DATABASE_OWNER_URL: ${{ secrets.DATABASE_OWNER_URL }}
+        run: db/migrate.sh
+
+name: migrate
+
+on:
+  workflow_call:
+
+permissions:
+  contents: read

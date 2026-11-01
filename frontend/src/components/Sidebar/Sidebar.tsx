@@ -1,4 +1,5 @@
-import type { View } from '../types.ts'
+import type { View } from '../../types.ts'
+import './Sidebar.css'
 
 type Props = {
   current:  View

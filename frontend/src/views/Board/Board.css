@@ -1,0 +1,77 @@
+/* ── kanban ───────────────────────────────────────────────────────────── */
+.kanban {
+  --card-gap:          var(--space-sm);
+  --kanban-columns:    repeat(3, minmax(0, 1fr));
+  --kanban-min-height: 12rem;
+
+  align-items:           start;
+  display:               grid;
+  gap:                   var(--space-md);
+  grid-template-columns: var(--kanban-columns);
+}
+
+.kanban__column {
+  background:    var(--color-surface-hover);
+  border:        var(--border);
+  border-radius: var(--radius-lg);
+  min-height:    var(--kanban-min-height);
+  padding:       var(--space-sm);
+  transition:    border-color var(--transition);
+}
+
+.kanban__column--over {
+  border-color: var(--color-accent);
+}
+
+.kanban__title {
+  align-items:     center;
+  display:         flex;
+  font-size:       var(--font-size-sm);
+  font-weight:     var(--font-weight-bold);
+  justify-content: space-between;
+  padding:         var(--space-xs) var(--space-sm) var(--space-sm);
+}
+
+.kanban__count {
+  color: var(--color-text-muted);
+}
+
+.kanban__cards {
+  display:        flex;
+  flex-direction: column;
+  gap:            var(--card-gap);
+  list-style:     none;
+  padding:        0;
+}
+
+/* ── card ─────────────────────────────────────────────────────────────── */
+.card {
+  background:     var(--color-surface);
+  border:         var(--border);
+  border-radius:  var(--radius-md);
+  cursor:         grab;
+  display:        flex;
+  flex-direction: column;
+  gap:            var(--card-gap);
+  padding:        var(--space-sm) var(--space-md);
+}
+
+.card:active {
+  cursor: grabbing;
+}
+
+.card__title {
+  overflow-wrap: anywhere;
+}
+
+.card__footer {
+  align-items: center;
+  display:     flex;
+  gap:         var(--card-gap);
+}
+
+.card__assignee {
+  flex:      auto;
+  font-size: var(--font-size-sm);
+  min-width: 0;
+}

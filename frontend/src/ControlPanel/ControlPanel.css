@@ -1,0 +1,13 @@
+/* ── shell ────────────────────────────────────────────────────────────── */
+.shell {
+  --shell-columns: var(--sidebar-width) 1fr;
+  --shell-rows:    var(--topbar-height) 1fr;
+  --sidebar-width: 14rem;
+  --topbar-height: 3.5rem;
+
+  display:               grid;
+  grid-template-areas:   "sidebar topbar" "sidebar main";
+  grid-template-columns: var(--shell-columns);
+  grid-template-rows:    var(--shell-rows);
+  min-height:            var(--full-height);
+}

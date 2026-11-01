@@ -1,5 +1,6 @@
-import { api, errorMessage } from '../api.ts'
-import type { User } from '../types.ts'
+import { api, errorMessage } from '../../api.ts'
+import type { User } from '../../types.ts'
+import './Login.css'
 import { useState, type FormEvent } from 'react'
 
 type Props = {
@@ -28,7 +29,7 @@ export function Login({ onLogin }: Props) {
   return (
     <main className="login">
       <form className="login__card" onSubmit={submit}>
-        <h1 className="login__title">plaza</h1>
+        <h1>plaza</h1>
         <label className="field">
           <span className="field__label">Email</span>
           <input autoComplete="username" className="field__input" name="email" required type="email" />

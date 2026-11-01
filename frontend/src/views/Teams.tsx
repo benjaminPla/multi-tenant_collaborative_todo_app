@@ -1,6 +1,6 @@
 import { api } from '../api.ts'
-import { EmptyState } from '../components/EmptyState.tsx'
-import { Page } from '../components/Page.tsx'
+import { EmptyState } from '../components/EmptyState/EmptyState.tsx'
+import { Page } from '../components/Page/Page.tsx'
 import { formatDate } from '../format.ts'
 import { useAction, type Loaded } from '../hooks.ts'
 import type { Team } from '../types.ts'

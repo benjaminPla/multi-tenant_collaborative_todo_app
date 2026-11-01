@@ -1,7 +1,8 @@
-import { api, ApiError, isConflict } from '../api.ts'
-import { Page } from '../components/Page.tsx'
-import { useAction, useLoad } from '../hooks.ts'
-import type { Board as BoardType, Todo, TodoPatch, TodoStatus } from '../types.ts'
+import { api, ApiError, isConflict } from '../../api.ts'
+import { Page } from '../../components/Page/Page.tsx'
+import { useAction, useLoad } from '../../hooks.ts'
+import type { Board as BoardType, Todo, TodoPatch, TodoStatus } from '../../types.ts'
+import './Board.css'
 import { useCallback, useState, type DragEvent, type FormEvent } from 'react'
 
 type Props = {

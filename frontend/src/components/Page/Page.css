@@ -1,0 +1,23 @@
+/* ── page ─────────────────────────────────────────────────────────────── */
+.page {
+  grid-area: main;
+  padding:   var(--space-lg);
+}
+
+.page__header {
+  align-items:     center;
+  display:         flex;
+  justify-content: space-between;
+  margin-bottom:   var(--space-lg);
+}
+
+.page__actions {
+  display: flex;
+  gap:     var(--space-sm);
+}
+
+.page__error {
+  color:         var(--color-danger);
+  font-size:     var(--font-size-sm);
+  margin-bottom: var(--space-md);
+}

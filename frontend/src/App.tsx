@@ -1,7 +1,7 @@
 import { api } from './api.ts'
-import { ControlPanel } from './ControlPanel.tsx'
+import { ControlPanel } from './ControlPanel/ControlPanel.tsx'
 import type { User } from './types.ts'
-import { Login } from './views/Login.tsx'
+import { Login } from './views/Login/Login.tsx'
 import { useEffect, useState } from 'react'
 
 export function App() {

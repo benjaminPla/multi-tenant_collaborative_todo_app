@@ -1,0 +1,21 @@
+/* ── topbar ───────────────────────────────────────────────────────────── */
+.topbar {
+  align-items:     center;
+  background:      var(--color-surface);
+  border-bottom:   var(--border);
+  display:         flex;
+  gap:             var(--space-md);
+  grid-area:       topbar;
+  justify-content: flex-end;
+  padding:         0 var(--space-lg);
+}
+
+.topbar__team {
+  margin-right: auto;
+  width:        auto;
+}
+
+.topbar__user {
+  color:     var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}

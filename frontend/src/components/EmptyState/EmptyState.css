@@ -1,0 +1,9 @@
+/* ── empty state ──────────────────────────────────────────────────────── */
+.empty {
+  background:    var(--color-surface);
+  border:        var(--border);
+  border-radius: var(--radius-lg);
+  color:         var(--color-text-muted);
+  padding:       var(--space-xl);
+  text-align:    center;
+}

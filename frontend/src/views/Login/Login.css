@@ -1,0 +1,20 @@
+/* ── login ────────────────────────────────────────────────────────────── */
+.login {
+  --login-width: 22rem;
+
+  display:     grid;
+  min-height:  var(--full-height);
+  place-items: center;
+}
+
+.login__card {
+  background:     var(--color-surface);
+  border:         var(--border);
+  border-radius:  var(--radius-lg);
+  display:        flex;
+  flex-direction: column;
+  gap:            var(--space-md);
+  padding:        var(--space-xl);
+  width:          var(--login-width);
+}
+

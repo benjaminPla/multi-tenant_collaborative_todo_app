@@ -1,4 +1,5 @@
-import type { Team } from '../types.ts'
+import type { Team } from '../../types.ts'
+import './Topbar.css'
 
 type Props = {
   email:        string

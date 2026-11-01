@@ -8,7 +8,6 @@ CREATE TABLE sessions (
 ALTER TABLE sessions
     ADD CONSTRAINT sessions_token_hash_length CHECK (octet_length(token_hash) = 32);
 
-CREATE INDEX sessions_expires_at_idx ON sessions (expires_at);
 CREATE INDEX sessions_user_id_idx ON sessions (user_id);
 
 GRANT DELETE, INSERT, SELECT ON sessions TO plaza_app;

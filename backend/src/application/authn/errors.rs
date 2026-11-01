@@ -5,7 +5,7 @@ use crate::domain::{
 };
 
 #[derive(Debug, thiserror::Error)]
-pub enum AuthAppError {
+pub enum AuthnAppError {
     #[error("forbidden")]
     Forbidden,
     #[error(transparent)]

@@ -1,3 +1,3 @@
-pub mod auth;
+pub mod authn;
 pub mod teams;
 pub mod users;

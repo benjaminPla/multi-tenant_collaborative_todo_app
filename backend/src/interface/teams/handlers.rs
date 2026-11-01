@@ -24,7 +24,7 @@ use crate::{
     },
     interface::{
         app_state::AppState,
-        auth::extractors::CurrentUser,
+        authn::extractors::CurrentUser,
         teams::dto::{
             AddMemberRequest,
             CreateTeamRequest,

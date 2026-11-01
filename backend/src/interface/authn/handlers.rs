@@ -1,11 +1,11 @@
 use crate::{
-    application::auth::{
-        errors::AuthAppError,
+    application::authn::{
+        errors::AuthnAppError,
         use_cases::{LoginInput, LoginUseCase, LogoutInput, LogoutUseCase},
     },
     interface::{
         app_state::AppState,
-        auth::{
+        authn::{
             cookie::{clear_session_cookie, session_cookie, SESSION_COOKIE},
             dto::LoginRequest,
             extractors::CurrentUser,
@@ -20,7 +20,7 @@ pub async fn login(
     State(state): State<AppState>,
     jar:          CookieJar,
     Json(body):   Json<LoginRequest>,
-) -> Result<(StatusCode, CookieJar), AuthAppError> {
+) -> Result<(StatusCode, CookieJar), AuthnAppError> {
     let use_case = LoginUseCase::new(state.hasher_service, state.session_repo, state.session_ttl, state.user_repo);
     let token    = use_case.execute(LoginInput { email: body.email, password: body.password }).await?;
     Ok((StatusCode::NO_CONTENT, jar.add(session_cookie(&token))))
@@ -29,7 +29,7 @@ pub async fn login(
 pub async fn logout(
     State(state): State<AppState>,
     jar:          CookieJar,
-) -> Result<(StatusCode, CookieJar), AuthAppError> {
+) -> Result<(StatusCode, CookieJar), AuthnAppError> {
     if let Some(cookie) = jar.get(SESSION_COOKIE) {
         let use_case = LogoutUseCase::new(state.session_repo);
         use_case.execute(LogoutInput { token: cookie.value().to_owned() }).await?;

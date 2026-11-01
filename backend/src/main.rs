@@ -14,7 +14,7 @@ use infrastructure::{
 };
 use interface::{
     app_state::AppState,
-    auth::router::auth_router,
+    authn::router::authn_router,
     teams::router::teams_router,
     users::router::users_router,
 };
@@ -42,7 +42,7 @@ async fn main() {
     };
 
     let app = Router::new()
-        .nest("/auth", auth_router())
+        .nest("/auth", authn_router())
         .nest("/teams", teams_router())
         .nest("/users", users_router())
         .with_state(app_state);

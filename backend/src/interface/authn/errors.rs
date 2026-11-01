@@ -1,4 +1,4 @@
-use crate::application::auth::errors::AuthAppError;
+use crate::application::authn::errors::AuthnAppError;
 use axum::{
     http::StatusCode,
     response::{IntoResponse, Response},
@@ -6,15 +6,15 @@ use axum::{
 };
 use serde_json::json;
 
-impl IntoResponse for AuthAppError {
+impl IntoResponse for AuthnAppError {
     fn into_response(self) -> Response {
         let status = match &self {
-            AuthAppError::Forbidden                => StatusCode::FORBIDDEN,
-            AuthAppError::InvalidCredentials
-            | AuthAppError::Unauthenticated        => StatusCode::UNAUTHORIZED,
-            AuthAppError::Hasher(_)
-            | AuthAppError::SessionRepo(_)
-            | AuthAppError::UserRepo(_)            => StatusCode::INTERNAL_SERVER_ERROR,
+            AuthnAppError::Forbidden         => StatusCode::FORBIDDEN,
+            AuthnAppError::InvalidCredentials
+            | AuthnAppError::Unauthenticated => StatusCode::UNAUTHORIZED,
+            AuthnAppError::Hasher(_)
+            | AuthnAppError::SessionRepo(_)
+            | AuthnAppError::UserRepo(_)     => StatusCode::INTERNAL_SERVER_ERROR,
         };
         let message = match status {
             StatusCode::INTERNAL_SERVER_ERROR => "internal error".to_owned(),

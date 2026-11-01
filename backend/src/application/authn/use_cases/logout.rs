@@ -1,5 +1,5 @@
 use crate::{
-    application::auth::errors::AuthAppError,
+    application::authn::errors::AuthnAppError,
     domain::sessions::{ports::SessionRepo, SessionToken},
 };
 use std::sync::Arc;
@@ -17,7 +17,7 @@ impl LogoutUseCase {
         Self { session_repo }
     }
 
-    pub async fn execute(&self, input: LogoutInput) -> Result<(), AuthAppError> {
+    pub async fn execute(&self, input: LogoutInput) -> Result<(), AuthnAppError> {
         let Some(token) = SessionToken::parse(&input.token) else {
             return Ok(());
         };

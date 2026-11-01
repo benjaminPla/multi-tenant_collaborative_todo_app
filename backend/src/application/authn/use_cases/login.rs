@@ -1,5 +1,5 @@
 use crate::{
-    application::auth::errors::AuthAppError,
+    application::authn::errors::AuthnAppError,
     domain::{
         hash::HasherService,
         sessions::{
@@ -39,16 +39,16 @@ impl LoginUseCase {
         Self { hasher_service, session_repo, session_ttl, user_repo }
     }
 
-    pub async fn execute(&self, input: LoginInput) -> Result<SessionToken, AuthAppError> {
-        let email    = Email::parse(&input.email).map_err(|_| AuthAppError::InvalidCredentials)?;
-        let password = Password::parse(input.password).map_err(|_| AuthAppError::InvalidCredentials)?;
+    pub async fn execute(&self, input: LoginInput) -> Result<SessionToken, AuthnAppError> {
+        let email    = Email::parse(&input.email).map_err(|_| AuthnAppError::InvalidCredentials)?;
+        let password = Password::parse(input.password).map_err(|_| AuthnAppError::InvalidCredentials)?;
 
         let Some(credentials) = self.user_repo.find_credentials_by_email(&email).await? else {
             self.hasher_service.verify_dummy(&password).await?;
-            return Err(AuthAppError::InvalidCredentials);
+            return Err(AuthnAppError::InvalidCredentials);
         };
         if !self.hasher_service.verify(&password, &credentials.password_hash).await? {
-            return Err(AuthAppError::InvalidCredentials);
+            return Err(AuthnAppError::InvalidCredentials);
         }
 
         let (session, token) = Session::start(credentials.id, self.session_ttl);

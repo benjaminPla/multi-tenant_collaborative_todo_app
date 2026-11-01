@@ -15,7 +15,7 @@ use crate::{
     },
     interface::{
         app_state::AppState,
-        auth::extractors::AdminUser,
+        authn::extractors::AdminUser,
         users::dto::{CreateUserRequest, UpdateUserRequest, UserResponse},
     },
 };

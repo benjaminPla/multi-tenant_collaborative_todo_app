@@ -17,3 +17,9 @@ pub struct Config {
     pub session_ttl_secs:        u32,
     pub sse_max_connections:     usize,
 }
+
+impl Config {
+    pub fn from_env() -> Self {
+        envy::from_env().expect("Failed to load env vars")
+    }
+}

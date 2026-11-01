@@ -94,7 +94,8 @@ body {
 }
 
 button,
-input {
+input,
+select {
   color: inherit;
   font:  inherit;
 }
@@ -171,6 +172,11 @@ input {
   padding:         0 var(--space-lg);
 }
 
+.topbar__team {
+  margin-right: auto;
+  width:        auto;
+}
+
 .topbar__user {
   color:     var(--color-text-muted);
   font-size: var(--font-size-sm);
@@ -192,6 +198,17 @@ input {
 .page__title {
   font-size:   var(--font-size-lg);
   font-weight: var(--font-weight-bold);
+}
+
+.page__actions {
+  display: flex;
+  gap:     var(--space-sm);
+}
+
+.page__error {
+  color:         var(--color-danger);
+  font-size:     var(--font-size-sm);
+  margin-bottom: var(--space-md);
 }
 
 /* ── buttons ──────────────────────────────────────────────────────────── */
@@ -224,6 +241,22 @@ input {
   background: var(--color-accent-hover);
 }
 
+.button--danger {
+  color: var(--color-danger);
+}
+
+.button--link {
+  background: none;
+  border:     none;
+  color:      var(--color-accent);
+  cursor:     pointer;
+  padding:    0;
+}
+
+.button--link:hover {
+  text-decoration: underline;
+}
+
 /* ── forms ────────────────────────────────────────────────────────────── */
 .field {
   display:        flex;
@@ -247,6 +280,44 @@ input {
 .form__error {
   color:     var(--color-danger);
   font-size: var(--font-size-sm);
+}
+
+/* ── inline form ───────────────────────────────────────────────────────── */
+.inline-form {
+  display: flex;
+  gap:     var(--space-sm);
+}
+
+/* ── table ────────────────────────────────────────────────────────────── */
+.table {
+  background:      var(--color-surface);
+  border:          var(--border);
+  border-collapse: separate;
+  border-radius:   var(--radius-lg);
+  border-spacing:  0;
+  overflow:        hidden;
+  width:           var(--full-width);
+}
+
+.table th,
+.table td {
+  border-bottom: var(--border);
+  padding:       var(--space-sm) var(--space-md);
+  text-align:    left;
+}
+
+.table th {
+  color:       var(--color-text-muted);
+  font-size:   var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+}
+
+.table tr:last-child td {
+  border-bottom: none;
+}
+
+.table .table__actions {
+  text-align: right;
 }
 
 /* ── empty state ──────────────────────────────────────────────────────── */

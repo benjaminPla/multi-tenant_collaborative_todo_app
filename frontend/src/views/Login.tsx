@@ -1,4 +1,4 @@
-import { api, ApiError } from '../api.ts'
+import { api, errorMessage } from '../api.ts'
 import type { User } from '../types.ts'
 import { useState, type FormEvent } from 'react'
 
@@ -19,7 +19,7 @@ export function Login({ onLogin }: Props) {
       await api.login(String(form.get('email')), String(form.get('password')))
       onLogin(await api.me())
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : 'something went wrong')
+      setError(errorMessage(err))
     } finally {
       setPending(false)
     }

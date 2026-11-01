@@ -43,7 +43,7 @@ async fn main() {
 
     let app = app(app_state);
 
-    let address  = SocketAddr::from(([127, 0, 0, 1], config.port));
+    let address  = SocketAddr::new(config.host, config.port);
     let listener = tokio::net::TcpListener::bind(address).await.unwrap();
     axum::serve(listener, app.into_make_service_with_connect_info::<SocketAddr>())
         .await

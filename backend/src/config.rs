@@ -1,4 +1,5 @@
 use serde::Deserialize;
+use std::net::IpAddr;
 
 #[derive(Deserialize)]
 pub struct Config {
@@ -7,6 +8,7 @@ pub struct Config {
     pub db_idle_timeout_secs:    u64,
     pub db_max_connections:      u32,
     pub db_min_connections:      u32,
+    pub host:                    IpAddr,
     pub port:                    u16,
     pub session_ttl_secs:        u32,
 }

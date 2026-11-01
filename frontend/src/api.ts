@@ -9,6 +9,8 @@ export class ApiError extends Error {
   }
 }
 
+export const isConflict = (err: unknown) => err instanceof ApiError && err.status === 409
+
 export const errorMessage = (err: unknown) => (err instanceof ApiError ? err.message : 'something went wrong')
 
 async function request<T>(method: string, path: string, body?: unknown): Promise<T> {
@@ -48,6 +50,7 @@ export const api = {
   todos: {
     create: (teamId: string, boardId: string, title: string) => request<Todo>('POST', `/teams/${teamId}/boards/${boardId}/todos`, { title }),
     delete: (teamId: string, boardId: string, id: string) => request<void>('DELETE', `/teams/${teamId}/boards/${boardId}/todos/${id}`),
+    get:    (teamId: string, boardId: string, id: string) => request<Todo>('GET', `/teams/${teamId}/boards/${boardId}/todos/${id}`),
     list:   (teamId: string, boardId: string) => request<Todo[]>('GET', `/teams/${teamId}/boards/${boardId}/todos`),
     update: (teamId: string, boardId: string, id: string, patch: TodoPatch) => request<Todo>('PATCH', `/teams/${teamId}/boards/${boardId}/todos/${id}`, patch),
   },

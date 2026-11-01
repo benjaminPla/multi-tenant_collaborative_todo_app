@@ -2,9 +2,10 @@ import { errorMessage } from './api.ts'
 import { useEffect, useState } from 'react'
 
 export type Loaded<T> = {
-  data?:  T
-  error:  string | null
-  reload: () => void
+  data?:   T
+  error:   string | null
+  reload:  () => void
+  setData: (data: T) => void
 }
 
 export function useLoad<T>(load: () => Promise<T>): Loaded<T> {
@@ -27,7 +28,7 @@ export function useLoad<T>(load: () => Promise<T>): Loaded<T> {
     }
   }, [load, version])
 
-  return { data, error, reload: () => setVersion((v) => v + 1) }
+  return { data, error, reload: () => setVersion((v) => v + 1), setData }
 }
 
 export function useAction(onSettled: () => void) {
